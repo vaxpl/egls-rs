@@ -5,7 +5,7 @@ use std::vec::Vec;
 
 /// Environment of the EGL instance.
 #[derive(Clone, Debug)]
-struct Environment {
+pub struct Environment {
     so: SharedObject,
     display: EGLDisplay,
     context: EGLContext,
@@ -45,7 +45,7 @@ struct EnvironmentOptions {
 }
 
 #[derive(Clone, Default, Debug)]
-struct EnvironmentBuilder {
+pub struct EnvironmentBuilder {
     options: EnvironmentOptions,
 }
 
