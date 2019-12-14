@@ -1,19 +1,25 @@
 [package]
-name = "egl-rs"
+name = "egl"
 version = "0.1.0"
 authors = ["Varphone Wong <varphone@qq.com>"]
+keywords = ["graphics"]
+description = "Embedded-System Graphics Library for Rust bindings"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/varphone/egl-rs.git"
+homepage = "https://github.com/varphone/egl-rs"
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-libc = "0.2.66"
+libc = "~0.2"
 
 [build-dependencies]
 gl_generator = "0.14.0"
 
 [features]
-default = [ "hi3559av100" ]
+default = []
 hi3516ev200 = []
 hi3516ev300 = []
 hi3518ev200 = []
