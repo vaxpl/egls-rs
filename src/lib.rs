@@ -339,6 +339,16 @@ pub fn get_default_display() -> Result<EGLDisplay, Error> {
     get_display(DEFAULT_DISPLAY)
 }
 
+/// Return a GL or an EGL extension function.
+///
+/// # Parameters
+///
+/// * `procname` - Specifies the name of the function to return.
+pub fn get_proc_address<T: AsRef<str>>(procname: T) -> *mut std::os::raw::c_void {
+    let procname = CString::new(procname.as_ref()).unwrap();
+    unsafe { GetProcAddress(procname.as_ptr()) as *mut std::os::raw::c_void }
+}
+
 /// Initialize an EGL display connection.
 ///
 /// # Parameters
