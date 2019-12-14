@@ -4,4 +4,6 @@ target = "aarch64-unknown-linux-gnu"
 [target.aarch64-unknown-linux-gnu]
 linker = "aarch64-himix100-linux-gcc"
 runner = "./target-runner.sh"
-rustflags = []
+rustflags = [
+    "--cfg", "hi3559av100",
+]
