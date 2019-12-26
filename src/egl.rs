@@ -3,6 +3,7 @@
 #![allow(non_snake_case)]
 #![allow(improper_ctypes)]
 #![allow(dead_code)]
+use std::convert::TryInto;
 
 pub const KHRONOS_SUPPORT_INT64: u32 = 1;
 pub const KHRONOS_SUPPORT_FLOAT: u32 = 1;
@@ -171,6 +172,237 @@ pub enum fbdev_pixmap_format {
     PIXMAP_FORMAT_BUTT = 2077032555,
 }
 
+impl From<u64> for fbdev_pixmap_format {
+    fn from(value: u64) -> Self {
+        match value {
+            2077032448 => fbdev_pixmap_format::PIXMAP_FORMAT_BGR565,
+            2077032449 => fbdev_pixmap_format::PIXMAP_FORMAT_RGB565,
+            2077032450 => fbdev_pixmap_format::PIXMAP_FORMAT_BGR565_AFBC,
+            2077032451 => fbdev_pixmap_format::PIXMAP_FORMAT_RGB565_AFBC,
+            2077032452 => fbdev_pixmap_format::PIXMAP_FORMAT_BGR565_AFBC_SPLITBLK,
+            2077032453 => fbdev_pixmap_format::PIXMAP_FORMAT_RGB565_AFBC_SPLITBLK,
+            2077032454 => fbdev_pixmap_format::PIXMAP_FORMAT_BGR565_AFBC_WIDEBLK,
+            2077032455 => fbdev_pixmap_format::PIXMAP_FORMAT_RGB565_AFBC_WIDEBLK,
+            2077032456 => fbdev_pixmap_format::PIXMAP_FORMAT_ABGR8888,
+            2077032457 => fbdev_pixmap_format::PIXMAP_FORMAT_ARGB8888,
+            2077032458 => fbdev_pixmap_format::PIXMAP_FORMAT_ARGB8888UI,
+            2077032459 => fbdev_pixmap_format::PIXMAP_FORMAT_BGRA8888,
+            2077032460 => fbdev_pixmap_format::PIXMAP_FORMAT_RGBA8888,
+            2077032461 => fbdev_pixmap_format::PIXMAP_FORMAT_ABGR8888_AFBC,
+            2077032462 => fbdev_pixmap_format::PIXMAP_FORMAT_XBGR8888_AFBC,
+            2077032463 => fbdev_pixmap_format::PIXMAP_FORMAT_ARGB8888_AFBC,
+            2077032464 => fbdev_pixmap_format::PIXMAP_FORMAT_BGRA8888_AFBC,
+            2077032465 => fbdev_pixmap_format::PIXMAP_FORMAT_RGBA8888_AFBC,
+            2077032466 => fbdev_pixmap_format::PIXMAP_FORMAT_ABGR8888_AFBC_SPLITBLK,
+            2077032467 => fbdev_pixmap_format::PIXMAP_FORMAT_XBGR8888_AFBC_SPLITBLK,
+            2077032468 => fbdev_pixmap_format::PIXMAP_FORMAT_ARGB8888_AFBC_SPLITBLK,
+            2077032469 => fbdev_pixmap_format::PIXMAP_FORMAT_BGRA8888_AFBC_SPLITBLK,
+            2077032470 => fbdev_pixmap_format::PIXMAP_FORMAT_RGBA8888_AFBC_SPLITBLK,
+            2077032471 => fbdev_pixmap_format::PIXMAP_FORMAT_ABGR8888_AFBC_SPLITBLK_WIDEBLK,
+            2077032472 => fbdev_pixmap_format::PIXMAP_FORMAT_XBGR8888_AFBC_SPLITBLK_WIDEBLK,
+            2077032473 => fbdev_pixmap_format::PIXMAP_FORMAT_ARGB8888_AFBC_SPLITBLK_WIDEBLK,
+            2077032474 => fbdev_pixmap_format::PIXMAP_FORMAT_BGRA8888_AFBC_SPLITBLK_WIDEBLK,
+            2077032475 => fbdev_pixmap_format::PIXMAP_FORMAT_RGBA8888_AFBC_SPLITBLK_WIDEBLK,
+            2077032476 => fbdev_pixmap_format::PIXMAP_FORMAT_XBGR8888,
+            2077032477 => fbdev_pixmap_format::PIXMAP_FORMAT_XRGB8888,
+            2077032478 => fbdev_pixmap_format::PIXMAP_FORMAT_BGRX8888,
+            2077032479 => fbdev_pixmap_format::PIXMAP_FORMAT_RGBX8888,
+            2077032480 => fbdev_pixmap_format::PIXMAP_FORMAT_BGR888,
+            2077032481 => fbdev_pixmap_format::PIXMAP_FORMAT_RGB888,
+            2077032482 => fbdev_pixmap_format::PIXMAP_FORMAT_BGR888_AFBC,
+            2077032483 => fbdev_pixmap_format::PIXMAP_FORMAT_RGB888_AFBC,
+            2077032484 => fbdev_pixmap_format::PIXMAP_FORMAT_BGR888_AFBC_SPLITBLK,
+            2077032485 => fbdev_pixmap_format::PIXMAP_FORMAT_RGB888_AFBC_SPLITBLK,
+            2077032486 => fbdev_pixmap_format::PIXMAP_FORMAT_BGR888_AFBC_SPLITBLK_WIDEBLK,
+            2077032487 => fbdev_pixmap_format::PIXMAP_FORMAT_RGB888_AFBC_SPLITBLK_WIDEBLK,
+            2077032488 => fbdev_pixmap_format::PIXMAP_FORMAT_ABGR4444,
+            2077032489 => fbdev_pixmap_format::PIXMAP_FORMAT_ABGR4444_AFBC,
+            2077032490 => fbdev_pixmap_format::PIXMAP_FORMAT_ARGB4444,
+            2077032491 => fbdev_pixmap_format::PIXMAP_FORMAT_BGRA4444,
+            2077032492 => fbdev_pixmap_format::PIXMAP_FORMAT_RGBA4444,
+            2077032493 => fbdev_pixmap_format::PIXMAP_FORMAT_ABGR1555,
+            2077032494 => fbdev_pixmap_format::PIXMAP_FORMAT_ABGR1555_AFBC,
+            2077032495 => fbdev_pixmap_format::PIXMAP_FORMAT_ARGB1555,
+            2077032496 => fbdev_pixmap_format::PIXMAP_FORMAT_BGRA5551,
+            2077032497 => fbdev_pixmap_format::PIXMAP_FORMAT_RGBA5551,
+            2077032498 => fbdev_pixmap_format::PIXMAP_FORMAT_L8,
+            2077032499 => fbdev_pixmap_format::PIXMAP_FORMAT_R8,
+            2077032500 => fbdev_pixmap_format::PIXMAP_FORMAT_RG8,
+            2077032501 => fbdev_pixmap_format::PIXMAP_FORMAT_R16,
+            2077032502 => fbdev_pixmap_format::PIXMAP_FORMAT_RG16,
+            2077032503 => fbdev_pixmap_format::PIXMAP_FORMAT_YV12_BT601_NARROW,
+            2077032504 => fbdev_pixmap_format::PIXMAP_FORMAT_YV12_BT601_WIDE,
+            2077032505 => fbdev_pixmap_format::PIXMAP_FORMAT_YV12_BT709_NARROW,
+            2077032506 => fbdev_pixmap_format::PIXMAP_FORMAT_YV12_BT709_WIDE,
+            2077032507 => fbdev_pixmap_format::PIXMAP_FORMAT_NV12_BT601_NARROW,
+            2077032508 => fbdev_pixmap_format::PIXMAP_FORMAT_NV12_BT601_WIDE,
+            2077032509 => fbdev_pixmap_format::PIXMAP_FORMAT_NV12_BT709_NARROW,
+            2077032510 => fbdev_pixmap_format::PIXMAP_FORMAT_NV12_BT709_WIDE,
+            2077032511 => fbdev_pixmap_format::PIXMAP_FORMAT_YUYV_BT601_NARROW,
+            2077032512 => fbdev_pixmap_format::PIXMAP_FORMAT_YUYV_BT601_WIDE,
+            2077032513 => fbdev_pixmap_format::PIXMAP_FORMAT_YUYV_BT709_NARROW,
+            2077032514 => fbdev_pixmap_format::PIXMAP_FORMAT_YUYV_BT709_WIDE,
+            2077032515 => fbdev_pixmap_format::PIXMAP_FORMAT_NV21_BT601_NARROW,
+            2077032516 => fbdev_pixmap_format::PIXMAP_FORMAT_NV21_BT601_WIDE,
+            2077032517 => fbdev_pixmap_format::PIXMAP_FORMAT_NV21_BT709_NARROW,
+            2077032518 => fbdev_pixmap_format::PIXMAP_FORMAT_NV21_BT709_WIDE,
+            2077032519 => fbdev_pixmap_format::PIXMAP_FORMAT_NV16_BT601_NARROW,
+            2077032520 => fbdev_pixmap_format::PIXMAP_FORMAT_NV16_BT601_WIDE,
+            2077032521 => fbdev_pixmap_format::PIXMAP_FORMAT_NV16_BT709_NARROW,
+            2077032522 => fbdev_pixmap_format::PIXMAP_FORMAT_NV16_BT709_WIDE,
+            2077032523 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT601_NARROW_AFBC,
+            2077032524 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT601_WIDE_AFBC,
+            2077032525 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT709_NARROW_AFBC,
+            2077032526 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT709_WIDE_AFBC,
+            2077032527 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT601_NARROW_AFBC,
+            2077032528 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT601_WIDE_AFBC,
+            2077032529 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT709_NARROW_AFBC,
+            2077032530 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT709_WIDE_AFBC,
+            2077032531 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT601_NARROW_AFBC_SPLITBLK,
+            2077032532 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT601_WIDE_AFBC_SPLITBLK,
+            2077032533 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT709_NARROW_AFBC_SPLITBLK,
+            2077032534 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT709_WIDE_AFBC_SPLITBLK,
+            2077032535 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT601_NARROW_AFBC_WIDEBLK,
+            2077032536 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT601_WIDE_AFBC_WIDEBLK,
+            2077032537 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT709_NARROW_AFBC_WIDEBLK,
+            2077032538 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT709_WIDE_AFBC_WIDEBLK,
+            2077032539 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT601_NARROW_AFBC_WIDEBLK,
+            2077032540 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT601_WIDE_AFBC_WIDEBLK,
+            2077032541 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT709_NARROW_AFBC_WIDEBLK,
+            2077032542 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT709_WIDE_AFBC_WIDEBLK,
+            2077032543 => fbdev_pixmap_format::PIXMAP_FORMAT_Y0L2,
+            2077032544 => fbdev_pixmap_format::PIXMAP_FORMAT_P010,
+            2077032545 => fbdev_pixmap_format::PIXMAP_FORMAT_P210,
+            2077032546 => fbdev_pixmap_format::PIXMAP_FORMAT_Y210,
+            2077032547 => fbdev_pixmap_format::PIXMAP_FORMAT_Y410,
+            2077032548 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_10BIT_AFBC,
+            2077032549 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_10BIT_AFBC,
+            2077032550 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_10BIT_AFBC_WIDEBLK,
+            2077032551 => fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_10BIT_AFBC_WIDEBLK,
+            2077032552 => fbdev_pixmap_format::PIXMAP_FORMAT_sABGR8888,
+            2077032553 => fbdev_pixmap_format::PIXMAP_FORMAT_sARGB8888,
+            2077032554 => fbdev_pixmap_format::PIXMAP_FORMAT_sXBGR8888,
+            2077032555 => fbdev_pixmap_format::PIXMAP_FORMAT_BUTT,
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl Into<u64> for fbdev_pixmap_format {
+    fn into(self) -> u64 {
+        match self {
+            fbdev_pixmap_format::PIXMAP_FORMAT_BGR565 => 2077032448,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RGB565 => 2077032449,
+            fbdev_pixmap_format::PIXMAP_FORMAT_BGR565_AFBC => 2077032450,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RGB565_AFBC => 2077032451,
+            fbdev_pixmap_format::PIXMAP_FORMAT_BGR565_AFBC_SPLITBLK => 2077032452,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RGB565_AFBC_SPLITBLK => 2077032453,
+            fbdev_pixmap_format::PIXMAP_FORMAT_BGR565_AFBC_WIDEBLK => 2077032454,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RGB565_AFBC_WIDEBLK => 2077032455,
+            fbdev_pixmap_format::PIXMAP_FORMAT_ABGR8888 => 2077032456,
+            fbdev_pixmap_format::PIXMAP_FORMAT_ARGB8888 => 2077032457,
+            fbdev_pixmap_format::PIXMAP_FORMAT_ARGB8888UI => 2077032458,
+            fbdev_pixmap_format::PIXMAP_FORMAT_BGRA8888 => 2077032459,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RGBA8888 => 2077032460,
+            fbdev_pixmap_format::PIXMAP_FORMAT_ABGR8888_AFBC => 2077032461,
+            fbdev_pixmap_format::PIXMAP_FORMAT_XBGR8888_AFBC => 2077032462,
+            fbdev_pixmap_format::PIXMAP_FORMAT_ARGB8888_AFBC => 2077032463,
+            fbdev_pixmap_format::PIXMAP_FORMAT_BGRA8888_AFBC => 2077032464,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RGBA8888_AFBC => 2077032465,
+            fbdev_pixmap_format::PIXMAP_FORMAT_ABGR8888_AFBC_SPLITBLK => 2077032466,
+            fbdev_pixmap_format::PIXMAP_FORMAT_XBGR8888_AFBC_SPLITBLK => 2077032467,
+            fbdev_pixmap_format::PIXMAP_FORMAT_ARGB8888_AFBC_SPLITBLK => 2077032468,
+            fbdev_pixmap_format::PIXMAP_FORMAT_BGRA8888_AFBC_SPLITBLK => 2077032469,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RGBA8888_AFBC_SPLITBLK => 2077032470,
+            fbdev_pixmap_format::PIXMAP_FORMAT_ABGR8888_AFBC_SPLITBLK_WIDEBLK => 2077032471,
+            fbdev_pixmap_format::PIXMAP_FORMAT_XBGR8888_AFBC_SPLITBLK_WIDEBLK => 2077032472,
+            fbdev_pixmap_format::PIXMAP_FORMAT_ARGB8888_AFBC_SPLITBLK_WIDEBLK => 2077032473,
+            fbdev_pixmap_format::PIXMAP_FORMAT_BGRA8888_AFBC_SPLITBLK_WIDEBLK => 2077032474,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RGBA8888_AFBC_SPLITBLK_WIDEBLK => 2077032475,
+            fbdev_pixmap_format::PIXMAP_FORMAT_XBGR8888 => 2077032476,
+            fbdev_pixmap_format::PIXMAP_FORMAT_XRGB8888 => 2077032477,
+            fbdev_pixmap_format::PIXMAP_FORMAT_BGRX8888 => 2077032478,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RGBX8888 => 2077032479,
+            fbdev_pixmap_format::PIXMAP_FORMAT_BGR888 => 2077032480,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RGB888 => 2077032481,
+            fbdev_pixmap_format::PIXMAP_FORMAT_BGR888_AFBC => 2077032482,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RGB888_AFBC => 2077032483,
+            fbdev_pixmap_format::PIXMAP_FORMAT_BGR888_AFBC_SPLITBLK => 2077032484,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RGB888_AFBC_SPLITBLK => 2077032485,
+            fbdev_pixmap_format::PIXMAP_FORMAT_BGR888_AFBC_SPLITBLK_WIDEBLK => 2077032486,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RGB888_AFBC_SPLITBLK_WIDEBLK => 2077032487,
+            fbdev_pixmap_format::PIXMAP_FORMAT_ABGR4444 => 2077032488,
+            fbdev_pixmap_format::PIXMAP_FORMAT_ABGR4444_AFBC => 2077032489,
+            fbdev_pixmap_format::PIXMAP_FORMAT_ARGB4444 => 2077032490,
+            fbdev_pixmap_format::PIXMAP_FORMAT_BGRA4444 => 2077032491,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RGBA4444 => 2077032492,
+            fbdev_pixmap_format::PIXMAP_FORMAT_ABGR1555 => 2077032493,
+            fbdev_pixmap_format::PIXMAP_FORMAT_ABGR1555_AFBC => 2077032494,
+            fbdev_pixmap_format::PIXMAP_FORMAT_ARGB1555 => 2077032495,
+            fbdev_pixmap_format::PIXMAP_FORMAT_BGRA5551 => 2077032496,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RGBA5551 => 2077032497,
+            fbdev_pixmap_format::PIXMAP_FORMAT_L8 => 2077032498,
+            fbdev_pixmap_format::PIXMAP_FORMAT_R8 => 2077032499,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RG8 => 2077032500,
+            fbdev_pixmap_format::PIXMAP_FORMAT_R16 => 2077032501,
+            fbdev_pixmap_format::PIXMAP_FORMAT_RG16 => 2077032502,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YV12_BT601_NARROW => 2077032503,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YV12_BT601_WIDE => 2077032504,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YV12_BT709_NARROW => 2077032505,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YV12_BT709_WIDE => 2077032506,
+            fbdev_pixmap_format::PIXMAP_FORMAT_NV12_BT601_NARROW => 2077032507,
+            fbdev_pixmap_format::PIXMAP_FORMAT_NV12_BT601_WIDE => 2077032508,
+            fbdev_pixmap_format::PIXMAP_FORMAT_NV12_BT709_NARROW => 2077032509,
+            fbdev_pixmap_format::PIXMAP_FORMAT_NV12_BT709_WIDE => 2077032510,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUYV_BT601_NARROW => 2077032511,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUYV_BT601_WIDE => 2077032512,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUYV_BT709_NARROW => 2077032513,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUYV_BT709_WIDE => 2077032514,
+            fbdev_pixmap_format::PIXMAP_FORMAT_NV21_BT601_NARROW => 2077032515,
+            fbdev_pixmap_format::PIXMAP_FORMAT_NV21_BT601_WIDE => 2077032516,
+            fbdev_pixmap_format::PIXMAP_FORMAT_NV21_BT709_NARROW => 2077032517,
+            fbdev_pixmap_format::PIXMAP_FORMAT_NV21_BT709_WIDE => 2077032518,
+            fbdev_pixmap_format::PIXMAP_FORMAT_NV16_BT601_NARROW => 2077032519,
+            fbdev_pixmap_format::PIXMAP_FORMAT_NV16_BT601_WIDE => 2077032520,
+            fbdev_pixmap_format::PIXMAP_FORMAT_NV16_BT709_NARROW => 2077032521,
+            fbdev_pixmap_format::PIXMAP_FORMAT_NV16_BT709_WIDE => 2077032522,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT601_NARROW_AFBC => 2077032523,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT601_WIDE_AFBC => 2077032524,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT709_NARROW_AFBC => 2077032525,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT709_WIDE_AFBC => 2077032526,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT601_NARROW_AFBC => 2077032527,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT601_WIDE_AFBC => 2077032528,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT709_NARROW_AFBC => 2077032529,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT709_WIDE_AFBC => 2077032530,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT601_NARROW_AFBC_SPLITBLK => 2077032531,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT601_WIDE_AFBC_SPLITBLK => 2077032532,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT709_NARROW_AFBC_SPLITBLK => 2077032533,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT709_WIDE_AFBC_SPLITBLK => 2077032534,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT601_NARROW_AFBC_WIDEBLK => 2077032535,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT601_WIDE_AFBC_WIDEBLK => 2077032536,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT709_NARROW_AFBC_WIDEBLK => 2077032537,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_8BIT_BT709_WIDE_AFBC_WIDEBLK => 2077032538,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT601_NARROW_AFBC_WIDEBLK => 2077032539,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT601_WIDE_AFBC_WIDEBLK => 2077032540,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT709_NARROW_AFBC_WIDEBLK => 2077032541,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT709_WIDE_AFBC_WIDEBLK => 2077032542,
+            fbdev_pixmap_format::PIXMAP_FORMAT_Y0L2 => 2077032543,
+            fbdev_pixmap_format::PIXMAP_FORMAT_P010 => 2077032544,
+            fbdev_pixmap_format::PIXMAP_FORMAT_P210 => 2077032545,
+            fbdev_pixmap_format::PIXMAP_FORMAT_Y210 => 2077032546,
+            fbdev_pixmap_format::PIXMAP_FORMAT_Y410 => 2077032547,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_10BIT_AFBC => 2077032548,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_10BIT_AFBC => 2077032549,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV420_10BIT_AFBC_WIDEBLK => 2077032550,
+            fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_10BIT_AFBC_WIDEBLK => 2077032551,
+            fbdev_pixmap_format::PIXMAP_FORMAT_sABGR8888 => 2077032552,
+            fbdev_pixmap_format::PIXMAP_FORMAT_sARGB8888 => 2077032553,
+            fbdev_pixmap_format::PIXMAP_FORMAT_sXBGR8888 => 2077032554,
+            fbdev_pixmap_format::PIXMAP_FORMAT_BUTT => 2077032555,
+        }
+    }
+}
+
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default)]
 pub struct linux_pixmap_plane {
@@ -206,6 +438,17 @@ impl std::default::Default for dummy_display {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
+}
+
+#[cfg(feature = "hi3559av100")]
+pub const DBE_COMMAND_WRAP: u32 = 2148549888;
+
+#[cfg(feature = "hi3559av100")]
+#[repr(C)]
+#[derive(Copy, Clone, Default, Debug)]
+pub struct hidbe_ioctl_wrap {
+    dbe_phyaddr: u64,
+    dbe_size: u64,
 }
 
 pub type EGLNativeWindowType = *mut fbdev_window;
@@ -355,6 +598,140 @@ where
     }
 
     inner(&mut loadfn)
+}
+
+#[cfg(feature = "hi3559av100")]
+pub unsafe fn hi_dbe_wrap_dma_buf_fd(phy_addr: u64, size: u64) -> std::os::raw::c_int {
+    let mut wrap: hidbe_ioctl_wrap = Default::default();
+    let mut dmabuf_fd: std::os::raw::c_int = -1;
+    let cstr = std::ffi::CStr::from_bytes_with_nul(b"/dev/hi_dbe\0").unwrap();
+    let fd = libc::open(cstr.as_ptr(), libc::O_RDWR);
+    assert!(fd > 0, "Failed to open: `{:?}`!", cstr);
+    wrap.dbe_phyaddr = phy_addr;
+    wrap.dbe_size = size;
+    dmabuf_fd = libc::ioctl(fd, DBE_COMMAND_WRAP.try_into().unwrap(), &wrap);
+    libc::close(fd);
+    assert!(
+        dmabuf_fd > 0,
+        "Failed to wrap with dma for {} @ {:X}!",
+        phy_addr,
+        size
+    );
+    dmabuf_fd
+}
+
+impl linux_pixmap {
+    #[cfg(feature = "hi3559av100")]
+    pub fn new(phy_addr: u64, width: isize, height: isize, format: u64) -> Self {
+        let w: khronos_usize_t = width.try_into().unwrap();
+        let h: khronos_usize_t = height.try_into().unwrap();
+        let mut dma: linux_pixmap = Default::default();
+        dma.width = width.try_into().unwrap();
+        dma.height = height.try_into().unwrap();
+        dma.pixmap_format = format;
+        match fbdev_pixmap_format::from(format) {
+            fbdev_pixmap_format::PIXMAP_FORMAT_ARGB8888
+            | fbdev_pixmap_format::PIXMAP_FORMAT_ABGR8888
+            | fbdev_pixmap_format::PIXMAP_FORMAT_ARGB8888UI => {
+                dma.planes[0].stride = w * 4;
+                dma.planes[0].size = dma.planes[0].stride * h;
+                dma.planes[0].offset = 0;
+                unsafe {
+                    dma.handles[0].fd = hi_dbe_wrap_dma_buf_fd(phy_addr, dma.planes[0].size);
+                }
+            }
+            fbdev_pixmap_format::PIXMAP_FORMAT_NV21_BT709_WIDE => {
+                dma.planes[0].stride = w;
+                dma.planes[0].size = dma.planes[0].stride * h;
+                dma.planes[0].offset = 0;
+                dma.planes[1].stride = w;
+                dma.planes[1].size = dma.planes[0].stride * h / 2;
+                dma.planes[1].offset = dma.planes[0].size;
+                unsafe {
+                    dma.handles[0].fd =
+                        hi_dbe_wrap_dma_buf_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
+                    dma.handles[1].fd = dma.handles[0].fd;
+                }
+            }
+            fbdev_pixmap_format::PIXMAP_FORMAT_P010 => {
+                dma.planes[0].stride = w * 2;
+                dma.planes[0].size = dma.planes[0].stride * h;
+                dma.planes[0].offset = 0;
+                dma.planes[1].stride = w * 2;
+                dma.planes[1].size = dma.planes[1].stride * h / 2;
+                dma.planes[1].offset = dma.planes[0].size;
+                unsafe {
+                    dma.handles[0].fd =
+                        hi_dbe_wrap_dma_buf_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
+                    dma.handles[1].fd = dma.handles[0].fd;
+                }
+            }
+            _ => unreachable!(),
+        }
+        dma
+    }
+    #[cfg(not(feature = "hi3559av100"))]
+    pub fn new(_phy_addr: u64, _width: isize, _height: isize, _format: u64) -> Self {
+        unimplemented!()
+    }
+}
+
+#[cfg(feature = "hi3559av100")]
+impl Drop for linux_pixmap {
+    fn drop(&mut self) {
+        for a in &self.handles {
+            unsafe {
+                libc::close(a.fd);
+            }
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct NativePixmap {
+    dma: *mut linux_pixmap,
+    id: NativePixmapType,
+    valid: bool,
+}
+
+impl NativePixmap {
+    pub fn new(phy_addr: u64, width: isize, height: isize, format: u64) -> Self {
+        unsafe {
+            let dma = Box::new(linux_pixmap::new(phy_addr, width, height, format));
+            let dma = Box::into_raw(dma);
+            let id = create_pixmap_ID_mapping(dma);
+            Self {
+                dma: dma,
+                id: id,
+                valid: true,
+            }
+        }
+    }
+
+    pub fn id(&self) -> NativePixmapType {
+        self.id
+    }
+}
+
+impl Default for NativePixmap {
+    fn default() -> Self {
+        Self {
+            dma: std::ptr::null_mut(),
+            id: 0,
+            valid: false,
+        }
+    }
+}
+
+impl Drop for NativePixmap {
+    fn drop(&mut self) {
+        if self.valid {
+            unsafe {
+                destroy_pixmap_ID_mapping(self.id);
+                drop(Box::from_raw(self.dma));
+            }
+        }
+    }
 }
 
 // Re-Export types
@@ -623,6 +1000,43 @@ mod tests {
                 stringify!(dummy_display),
                 "::",
                 stringify!(front_buffer)
+            )
+        );
+    }
+
+    #[cfg(feature = "hi3559av100")]
+    #[test]
+    fn test_layout_hidbe_ioctl_wrap() {
+        assert_eq!(
+            ::std::mem::size_of::<hidbe_ioctl_wrap>(),
+            16usize,
+            concat!("Size of: ", stringify!(hidbe_ioctl_wrap))
+        );
+        assert_eq!(
+            ::std::mem::align_of::<hidbe_ioctl_wrap>(),
+            8usize,
+            concat!("Alignment of ", stringify!(hidbe_ioctl_wrap))
+        );
+        assert_eq!(
+            unsafe {
+                &(*(::std::ptr::null::<hidbe_ioctl_wrap>())).dbe_phyaddr as *const _ as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(hidbe_ioctl_wrap),
+                "::",
+                stringify!(dbe_phyaddr)
+            )
+        );
+        assert_eq!(
+            unsafe { &(*(::std::ptr::null::<hidbe_ioctl_wrap>())).dbe_size as *const _ as usize },
+            8usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(hidbe_ioctl_wrap),
+                "::",
+                stringify!(dbe_size)
             )
         );
     }

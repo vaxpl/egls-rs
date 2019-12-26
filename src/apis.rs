@@ -422,6 +422,10 @@ mod tests {
     use crate::{egl, so};
 
     fn egl_init() -> (so::SharedObject, egl::EGLDisplay) {
+        #[cfg(feature = "hi3559av100")]
+        {
+            println!("NOTE: You must start HiFB before run tests!!!");
+        }
         let so = so::SharedObject::load("libEGL.so");
         egl::load_with(|s| so.get_proc_address(s));
         egl::load_with_priv(|s| so.get_proc_address(s));
@@ -432,12 +436,14 @@ mod tests {
         (so, dpy)
     }
 
+    #[cfg(feature = "hi3559av100")]
     #[test]
     fn test_bind_api() {
         let (_so, _dpy) = egl_init();
         assert!(crate::bind_api(egl::OPENGL_ES_API).unwrap());
     }
 
+    #[cfg(feature = "hi3559av100")]
     #[test]
     fn test_query_string() {
         let (_so, dpy) = egl_init();

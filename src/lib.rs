@@ -16,5 +16,8 @@ pub use env::*;
 pub mod error;
 pub use error::*;
 
+pub mod pixmap;
+pub use pixmap::*;
+
 /// The shared library helper.
 pub mod so;
