@@ -14,7 +14,7 @@ fn main() {
         (1, 5),
         Profile::Core,
         Fallbacks::All,
-        ["EGL_KHR_image_base"],
+        ["EGL_KHR_image_base", "EGL_KHR_image_pixmap"],
     )
     .write_bindings(GlobalGenerator, &mut file)
     .unwrap();
