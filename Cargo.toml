@@ -20,6 +20,7 @@ winapi = { version = "0.3.8", features = [ "libloaderapi" ] }
 
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"
+lazy_static = { version = "1.4", optional = true }
 
 [features]
 default = []
@@ -29,4 +30,4 @@ hi3518ev200 = []
 hi3518ev300 = []
 hi3519av100 = []
 hi3531v100 = []
-hi3559av100 = []
+hi3559av100 = [ "lazy_static" ]

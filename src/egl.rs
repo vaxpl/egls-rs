@@ -3,6 +3,8 @@
 #![allow(non_snake_case)]
 #![allow(improper_ctypes)]
 #![allow(dead_code)]
+#[cfg(feature = "hi3559av100")]
+use lazy_static::{lazy_static};
 use std::convert::TryInto;
 
 pub const KHRONOS_SUPPORT_INT64: u32 = 1;
@@ -601,6 +603,54 @@ where
 }
 
 #[cfg(feature = "hi3559av100")]
+struct DmaBufferExporter {
+    fd: std::os::raw::c_int,
+}
+
+#[cfg(feature = "hi3559av100")]
+impl DmaBufferExporter {
+    fn new() -> Self {
+        unsafe {
+            let cstr = std::ffi::CStr::from_bytes_with_nul(b"/dev/hi_dbe\0").unwrap();
+            let fd = libc::open(cstr.as_ptr(), libc::O_RDWR);
+            assert!(fd > 0, "Failed to open: `{:?}`!", cstr);
+            Self { fd }
+        }
+    }
+
+    fn wrap_fd(&self, phy_addr: u64, size: u64) -> std::os::raw::c_int {
+        unsafe {
+            let mut wrap: hidbe_ioctl_wrap = Default::default();
+            wrap.dbe_phyaddr = phy_addr;
+            wrap.dbe_size = size;
+            let dmabuf_fd = libc::ioctl(self.fd, DBE_COMMAND_WRAP.try_into().unwrap(), &wrap);
+            assert!(
+                dmabuf_fd > 0,
+                "Failed to wrap with dma for {} @ {:X}!",
+                phy_addr,
+                size
+            );
+            dmabuf_fd
+        }
+    }
+}
+
+#[cfg(feature = "hi3559av100")]
+impl Drop for DmaBufferExporter {
+    fn drop(&mut self) {
+        if self.fd > 0 {
+            unsafe { libc::close(self.fd); }
+            self.fd = -1;
+        }
+    }
+}
+
+#[cfg(feature = "hi3559av100")]
+lazy_static! {
+    static ref DBE: DmaBufferExporter = DmaBufferExporter::new();
+}
+
+#[cfg(feature = "hi3559av100")]
 pub unsafe fn hi_dbe_wrap_dma_buf_fd(phy_addr: u64, size: u64) -> std::os::raw::c_int {
     let mut wrap: hidbe_ioctl_wrap = Default::default();
     let mut dmabuf_fd: std::os::raw::c_int = -1;
@@ -637,7 +687,7 @@ impl linux_pixmap {
                 dma.planes[0].size = dma.planes[0].stride * h;
                 dma.planes[0].offset = 0;
                 unsafe {
-                    dma.handles[0].fd = hi_dbe_wrap_dma_buf_fd(phy_addr, dma.planes[0].size);
+                    dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size);
                 }
             }
             fbdev_pixmap_format::PIXMAP_FORMAT_NV21_BT709_WIDE => {
@@ -649,7 +699,7 @@ impl linux_pixmap {
                 dma.planes[1].offset = dma.planes[0].size;
                 unsafe {
                     dma.handles[0].fd =
-                        hi_dbe_wrap_dma_buf_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
+                        DBE.wrap_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
                     dma.handles[1].fd = dma.handles[0].fd;
                 }
             }
@@ -662,7 +712,7 @@ impl linux_pixmap {
                 dma.planes[1].offset = dma.planes[0].size;
                 unsafe {
                     dma.handles[0].fd =
-                        hi_dbe_wrap_dma_buf_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
+                        DBE.wrap_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
                     dma.handles[1].fd = dma.handles[0].fd;
                 }
             }
