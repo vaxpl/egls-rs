@@ -30,6 +30,18 @@ impl Environment {
         }
     }
 
+    pub fn get_display(&self) -> EGLDisplay {
+        self.display
+    }
+
+    pub fn get_context(&self) -> EGLContext {
+        self.context
+    }
+
+    pub fn get_surface(&self) -> EGLSurface {
+        self.surface
+    }
+
     pub fn make_current(&self) {
         crate::make_current(self.display, self.surface, self.surface, self.context).unwrap();
     }
