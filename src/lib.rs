@@ -16,8 +16,11 @@ pub use env::*;
 pub mod error;
 pub use error::*;
 
+pub mod image;
+pub use image::{Image, ImageBuffer, ImageBuilder, Target};
+
 pub mod pixmap;
-pub use pixmap::*;
+pub use pixmap::{Pixmap, PixmapBuilder, PixmapFormat};
 
 /// The shared library helper.
 pub mod so;
