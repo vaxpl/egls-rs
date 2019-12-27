@@ -128,7 +128,7 @@ impl<'a> std::fmt::Debug for Pixmap<'a> {
     }
 }
 
-pub struct PixmapLoader<'a> {
+pub struct PixmapBuilder<'a> {
     phy_addr: u64,
     width: isize,
     height: isize,
@@ -136,7 +136,7 @@ pub struct PixmapLoader<'a> {
     finalizer: Cell<Option<Finalizer<'a>>>,
 }
 
-impl<'a> PixmapLoader<'a> {
+impl<'a> PixmapBuilder<'a> {
     pub fn new() -> Self {
         Self {
             phy_addr: 0,
@@ -171,7 +171,7 @@ impl<'a> PixmapLoader<'a> {
         self
     }
 
-    pub fn load(&self) -> Result<Pixmap<'a>, String> {
+    pub fn build(&self) -> Result<Pixmap<'a>, String> {
         Ok(Pixmap::new(
             egl::NativePixmap::new(self.phy_addr, self.width, self.height, self.format as u64),
             self.finalizer.replace(None),
