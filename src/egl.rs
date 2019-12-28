@@ -690,7 +690,70 @@ impl linux_pixmap {
         dma.pixmap_format = format;
 
         match fbdev_pixmap_format::from(format) {
-            PIXMAP_FORMAT_ARGB8888 | PIXMAP_FORMAT_ABGR8888 | PIXMAP_FORMAT_ARGB8888UI => {
+            PIXMAP_FORMAT_BGR565
+            | PIXMAP_FORMAT_RGB565
+            | PIXMAP_FORMAT_BGR565_AFBC
+            | PIXMAP_FORMAT_RGB565_AFBC
+            | PIXMAP_FORMAT_BGR565_AFBC_SPLITBLK
+            | PIXMAP_FORMAT_RGB565_AFBC_SPLITBLK
+            | PIXMAP_FORMAT_BGR565_AFBC_WIDEBLK
+            | PIXMAP_FORMAT_RGB565_AFBC_WIDEBLK
+            | PIXMAP_FORMAT_ABGR4444
+            | PIXMAP_FORMAT_ABGR4444_AFBC
+            | PIXMAP_FORMAT_ARGB4444
+            | PIXMAP_FORMAT_BGRA4444
+            | PIXMAP_FORMAT_RGBA4444
+            | PIXMAP_FORMAT_ABGR1555
+            | PIXMAP_FORMAT_ABGR1555_AFBC
+            | PIXMAP_FORMAT_ARGB1555
+            | PIXMAP_FORMAT_BGRA5551
+            | PIXMAP_FORMAT_RGBA5551 => {
+                dma.planes[0].stride = w * 2;
+                dma.planes[0].size = dma.planes[0].stride * h;
+                dma.planes[0].offset = 0;
+                unsafe {
+                    dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size);
+                }
+            }
+            PIXMAP_FORMAT_BGR888
+            | PIXMAP_FORMAT_RGB888
+            | PIXMAP_FORMAT_BGR888_AFBC
+            | PIXMAP_FORMAT_RGB888_AFBC
+            | PIXMAP_FORMAT_BGR888_AFBC_SPLITBLK
+            | PIXMAP_FORMAT_RGB888_AFBC_SPLITBLK
+            | PIXMAP_FORMAT_BGR888_AFBC_SPLITBLK_WIDEBLK
+            | PIXMAP_FORMAT_RGB888_AFBC_SPLITBLK_WIDEBLK => {
+                dma.planes[0].stride = w * 3;
+                dma.planes[0].size = dma.planes[0].stride * h;
+                dma.planes[0].offset = 0;
+                unsafe {
+                    dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size);
+                }
+            }
+            PIXMAP_FORMAT_ABGR8888
+            | PIXMAP_FORMAT_ARGB8888
+            | PIXMAP_FORMAT_ARGB8888UI
+            | PIXMAP_FORMAT_BGRA8888
+            | PIXMAP_FORMAT_RGBA8888
+            | PIXMAP_FORMAT_ABGR8888_AFBC
+            | PIXMAP_FORMAT_XBGR8888_AFBC
+            | PIXMAP_FORMAT_ARGB8888_AFBC
+            | PIXMAP_FORMAT_BGRA8888_AFBC
+            | PIXMAP_FORMAT_RGBA8888_AFBC
+            | PIXMAP_FORMAT_ABGR8888_AFBC_SPLITBLK
+            | PIXMAP_FORMAT_XBGR8888_AFBC_SPLITBLK
+            | PIXMAP_FORMAT_ARGB8888_AFBC_SPLITBLK
+            | PIXMAP_FORMAT_BGRA8888_AFBC_SPLITBLK
+            | PIXMAP_FORMAT_RGBA8888_AFBC_SPLITBLK
+            | PIXMAP_FORMAT_ABGR8888_AFBC_SPLITBLK_WIDEBLK
+            | PIXMAP_FORMAT_XBGR8888_AFBC_SPLITBLK_WIDEBLK
+            | PIXMAP_FORMAT_ARGB8888_AFBC_SPLITBLK_WIDEBLK
+            | PIXMAP_FORMAT_BGRA8888_AFBC_SPLITBLK_WIDEBLK
+            | PIXMAP_FORMAT_RGBA8888_AFBC_SPLITBLK_WIDEBLK
+            | PIXMAP_FORMAT_XBGR8888
+            | PIXMAP_FORMAT_XRGB8888
+            | PIXMAP_FORMAT_BGRX8888
+            | PIXMAP_FORMAT_RGBX8888 => {
                 dma.planes[0].stride = w * 4;
                 dma.planes[0].size = dma.planes[0].stride * h;
                 dma.planes[0].offset = 0;
