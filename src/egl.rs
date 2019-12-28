@@ -4,7 +4,8 @@
 #![allow(improper_ctypes)]
 #![allow(dead_code)]
 #[cfg(feature = "hi3559av100")]
-use lazy_static::{lazy_static};
+use lazy_static::lazy_static;
+
 use std::convert::TryInto;
 
 pub const KHRONOS_SUPPORT_INT64: u32 = 1;
@@ -639,7 +640,9 @@ impl DmaBufferExporter {
 impl Drop for DmaBufferExporter {
     fn drop(&mut self) {
         if self.fd > 0 {
-            unsafe { libc::close(self.fd); }
+            unsafe {
+                libc::close(self.fd);
+            }
             self.fd = -1;
         }
     }
