@@ -2,7 +2,7 @@
 use std::convert::TryInto;
 
 /// Error Object for EGL.
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, Default, PartialEq, Eq)]
 pub struct Error(EGLint);
 
 impl Error {
@@ -14,17 +14,17 @@ impl Error {
     }
 
     /// Return true if error raised.
-    pub fn is_error(&self) -> bool {
+    pub fn is_error(self) -> bool {
         self.0 != egl::SUCCESS.try_into().unwrap()
     }
 
     /// Return true if no error.
-    pub fn is_okay(&self) -> bool {
+    pub fn is_okay(self) -> bool {
         self.0 == egl::SUCCESS.try_into().unwrap()
     }
 
     /// Return human reable text of the error code.
-    pub fn to_str(&self) -> &str {
+    pub fn to_str(self) -> &'static str {
         match self.0 as u32 {
             egl::SUCCESS => "No error",
             egl::NOT_INITIALIZED => "EGL not initialized or failed to initialize",

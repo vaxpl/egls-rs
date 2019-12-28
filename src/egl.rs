@@ -3,6 +3,8 @@
 #![allow(non_snake_case)]
 #![allow(improper_ctypes)]
 #![allow(dead_code)]
+#![allow(clippy::missing_safety_doc)]
+#![allow(clippy::unreadable_literal)]
 #[cfg(feature = "hi3559av100")]
 use lazy_static::lazy_static;
 
@@ -711,9 +713,7 @@ impl linux_pixmap {
                 dma.planes[0].stride = w * 2;
                 dma.planes[0].size = dma.planes[0].stride * h;
                 dma.planes[0].offset = 0;
-                unsafe {
-                    dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size);
-                }
+                dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size);
             }
             PIXMAP_FORMAT_BGR888
             | PIXMAP_FORMAT_RGB888
@@ -726,9 +726,7 @@ impl linux_pixmap {
                 dma.planes[0].stride = w * 3;
                 dma.planes[0].size = dma.planes[0].stride * h;
                 dma.planes[0].offset = 0;
-                unsafe {
-                    dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size);
-                }
+                dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size);
             }
             PIXMAP_FORMAT_ABGR8888
             | PIXMAP_FORMAT_ARGB8888
@@ -757,9 +755,7 @@ impl linux_pixmap {
                 dma.planes[0].stride = w * 4;
                 dma.planes[0].size = dma.planes[0].stride * h;
                 dma.planes[0].offset = 0;
-                unsafe {
-                    dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size);
-                }
+                dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size);
             }
             PIXMAP_FORMAT_NV21_BT709_WIDE => {
                 dma.planes[0].stride = w;
@@ -768,11 +764,8 @@ impl linux_pixmap {
                 dma.planes[1].stride = w;
                 dma.planes[1].size = dma.planes[0].stride * h / 2;
                 dma.planes[1].offset = dma.planes[0].size;
-                unsafe {
-                    dma.handles[0].fd =
-                        DBE.wrap_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
-                    dma.handles[1].fd = dma.handles[0].fd;
-                }
+                dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
+                dma.handles[1].fd = unsafe { dma.handles[0].fd };
             }
             PIXMAP_FORMAT_P010 => {
                 dma.planes[0].stride = w * 2;
@@ -781,11 +774,8 @@ impl linux_pixmap {
                 dma.planes[1].stride = w * 2;
                 dma.planes[1].size = dma.planes[1].stride * h / 2;
                 dma.planes[1].offset = dma.planes[0].size;
-                unsafe {
-                    dma.handles[0].fd =
-                        DBE.wrap_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
-                    dma.handles[1].fd = dma.handles[0].fd;
-                }
+                dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
+                dma.handles[1].fd = unsafe { dma.handles[0].fd };
             }
             _ => unreachable!(),
         }
@@ -822,8 +812,8 @@ impl NativePixmap {
             let dma = Box::into_raw(dma);
             let id = create_pixmap_ID_mapping(dma);
             Self {
-                dma: dma,
-                id: id,
+                dma,
+                id,
                 valid: true,
             }
         }

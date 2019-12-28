@@ -73,6 +73,12 @@ pub enum PixmapFormat {
         egl::fbdev_pixmap_format::PIXMAP_FORMAT_YUV422_8BIT_BT709_WIDE_AFBC as isize,
 }
 
+impl Default for PixmapFormat {
+    fn default() -> Self {
+        PixmapFormat::Argb8888
+    }
+}
+
 /// Callback for Pixmap cleanup native resources.
 pub type Finalizer<'a> = Box<dyn Fn(&Pixmap) + 'a>;
 
@@ -87,10 +93,7 @@ unsafe impl<'a> Sync for Pixmap<'a> {}
 
 impl<'a> Pixmap<'a> {
     pub fn new(native: egl::NativePixmap, finalizer: Option<Finalizer<'a>>) -> Self {
-        Self {
-            native: native,
-            finalizer: finalizer,
-        }
+        Self { native, finalizer }
     }
 
     pub fn id(&self) -> EGLNativePixmapType {
@@ -128,6 +131,7 @@ impl<'a> std::fmt::Debug for Pixmap<'a> {
     }
 }
 
+#[derive(Default)]
 pub struct PixmapBuilder<'a> {
     phy_addr: u64,
     width: isize,

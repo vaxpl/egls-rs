@@ -38,19 +38,37 @@ pub fn bind_tex_image(dpy: EGLDisplay, surface: EGLSurface, buffer: EGLint) -> R
 ///
 /// * `display` - Specifies the EGL display connection.
 /// * `attrib_list` - Specifies attributes required to match by configs.
-/// * `configs` - Returns an array of frame buffer configurations.
-/// * `config_size` - Specifies the size of the array of frame buffer configurations.
-/// * `num_config` - Returns the number of frame buffer configurations returned.
-pub fn choose_config(
-    display: EGLDisplay,
-    attrib_list: *const EGLint,
-    configs: *mut EGLConfig,
-    config_size: EGLint,
-    num_config: *mut EGLint,
-) -> Result<bool, Error> {
-    match unsafe { egl::ChooseConfig(display, attrib_list, configs, config_size, num_config) } {
-        1 => Ok(true),
-        _ => Err(Error::new()),
+///
+/// # Returns
+///
+/// * An array of frame buffer configurations.
+pub fn choose_config(display: EGLDisplay, attrib_list: &[EGLint]) -> Result<Vec<EGLConfig>, Error> {
+    unsafe {
+        let mut num_config: EGLint = 0;
+        if egl::TRUE
+            != egl::ChooseConfig(
+                display,
+                attrib_list.as_ptr(),
+                std::ptr::null_mut(),
+                0,
+                &mut num_config,
+            )
+        {
+            return Err(Error::new());
+        }
+        let mut configs: Vec<EGLConfig> = vec![std::ptr::null_mut(); num_config as usize];
+        if egl::TRUE
+            != egl::ChooseConfig(
+                display,
+                attrib_list.as_ptr(),
+                configs.as_mut_ptr(),
+                configs.len() as EGLint,
+                &mut num_config,
+            )
+        {
+            return Err(Error::new());
+        }
+        Ok(configs)
     }
 }
 
@@ -69,9 +87,10 @@ pub fn create_context(
     display: EGLDisplay,
     config: EGLConfig,
     share_context: EGLContext,
-    attrib_list: *const EGLint,
+    attrib_list: Option<&[EGLint]>,
 ) -> Result<EGLContext, Error> {
-    let ctx = unsafe { egl::CreateContext(display, config, share_context, attrib_list) };
+    let aptr = attrib_list.map_or(std::ptr::null(), |v| v.as_ptr());
+    let ctx = unsafe { egl::CreateContext(display, config, share_context, aptr) };
     if ctx == egl::NO_CONTEXT {
         Err(Error::new())
     } else {
@@ -93,9 +112,10 @@ pub fn create_image(
     context: EGLContext,
     target: EGLenum,
     buffer: EGLClientBuffer,
-    attrib_list: *const EGLAttrib,
+    attrib_list: Option<&[EGLAttrib]>,
 ) -> Result<EGLImage, Error> {
-    let img = unsafe { egl::CreateImage(display, context, target, buffer, attrib_list) };
+    let aptr = attrib_list.map_or(std::ptr::null(), |v| v.as_ptr());
+    let img = unsafe { egl::CreateImage(display, context, target, buffer, aptr) };
     if img == egl::NO_IMAGE {
         Err(Error::new())
     } else {
@@ -117,9 +137,10 @@ pub fn create_image_khr(
     context: EGLContext,
     target: EGLenum,
     buffer: EGLClientBuffer,
-    attrib_list: *const EGLint,
+    attrib_list: Option<&[EGLint]>,
 ) -> Result<EGLImage, Error> {
-    let val = unsafe { egl::CreateImageKHR(display, context, target, buffer, attrib_list) };
+    let aptr = attrib_list.map_or(std::ptr::null(), |v| v.as_ptr());
+    let val = unsafe { egl::CreateImageKHR(display, context, target, buffer, aptr) };
     if val == egl::NO_IMAGE {
         Err(Error::new())
     } else {
@@ -137,9 +158,10 @@ pub fn create_image_khr(
 pub fn create_pbuffer_surface(
     display: EGLDisplay,
     config: EGLConfig,
-    attrib_list: *const EGLint,
+    attrib_list: Option<&[EGLint]>,
 ) -> Result<EGLSurface, Error> {
-    let val = unsafe { egl::CreatePbufferSurface(display, config, attrib_list) };
+    let aptr = attrib_list.map_or(std::ptr::null(), |v| v.as_ptr());
+    let val = unsafe { egl::CreatePbufferSurface(display, config, aptr) };
     if val == egl::NO_SURFACE {
         Err(Error::new())
     } else {
@@ -159,9 +181,10 @@ pub fn create_pixmap_surface(
     display: EGLDisplay,
     config: EGLConfig,
     pixmap: EGLNativePixmapType,
-    attrib_list: *const EGLint,
+    attrib_list: Option<&[EGLint]>,
 ) -> Result<EGLSurface, Error> {
-    let val = unsafe { egl::CreatePixmapSurface(display, config, pixmap, attrib_list) };
+    let aptr = attrib_list.map_or(std::ptr::null(), |v| v.as_ptr());
+    let val = unsafe { egl::CreatePixmapSurface(display, config, pixmap, aptr) };
     if val == egl::NO_SURFACE {
         Err(Error::new())
     } else {
@@ -181,9 +204,10 @@ pub fn create_window_surface(
     display: EGLDisplay,
     config: EGLConfig,
     win: EGLNativeWindowType,
-    attrib_list: *const EGLint,
+    attrib_list: Option<&[EGLint]>,
 ) -> Result<EGLSurface, Error> {
-    let val = unsafe { egl::CreateWindowSurface(display, config, win, attrib_list) };
+    let aptr = attrib_list.map_or(std::ptr::null(), |v| v.as_ptr());
+    let val = unsafe { egl::CreateWindowSurface(display, config, win, aptr) };
     if val == egl::NO_SURFACE {
         Err(Error::new())
     } else {

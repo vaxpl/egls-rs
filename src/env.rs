@@ -1,4 +1,4 @@
-use crate::{egl, so::SharedObject, EGLConfig, EGLContext, EGLDisplay, EGLSurface, EGLint};
+use crate::{egl, so::SharedObject, EGLContext, EGLDisplay, EGLSurface, EGLint};
 use std::collections::HashMap;
 use std::convert::TryInto;
 use std::vec::Vec;
@@ -162,10 +162,10 @@ impl EnvironmentBuilder {
         egl::load_with(|s| so.get_proc_address(s));
         egl::load_with_priv(|s| so.get_proc_address(s));
 
-        let mut configs: EGLConfig = std::ptr::null_mut();
+        //let mut configs: EGLConfig = std::ptr::null_mut();
         let mut config_attribs: Vec<EGLint> = Vec::new();
         let mut context_attribs: Vec<EGLint> = Vec::new();
-        let mut num_config: EGLint = 0;
+        //let mut num_config: EGLint = 0;
         let display = crate::get_default_display().unwrap();
 
         for (key, val) in self.options.config_attribs.iter() {
@@ -182,23 +182,22 @@ impl EnvironmentBuilder {
 
         crate::bind_api(egl::OPENGL_ES_API).unwrap();
         crate::initialize_default(display).unwrap();
-        crate::choose_config(
+        let configs = crate::choose_config(
             display,
-            config_attribs.as_ptr(),
-            &mut configs,
-            1,
-            &mut num_config,
+            &config_attribs,
+            //&mut configs,
+            //1,
+            //&mut num_config,
         )
         .unwrap();
 
-        let win = Box::into_raw(Box::new(self.options.native_window.clone()));
-        let surface =
-            crate::create_window_surface(display, configs, win, std::ptr::null_mut()).unwrap();
+        let win = Box::into_raw(Box::new(self.options.native_window));
+        let surface = crate::create_window_surface(display, configs[0], win, None).unwrap();
         let context = crate::create_context(
             display,
-            configs,
+            configs[0],
             std::ptr::null_mut(),
-            context_attribs.as_ptr(),
+            Some(&context_attribs),
         )
         .unwrap();
 

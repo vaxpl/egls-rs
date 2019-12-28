@@ -70,7 +70,6 @@ impl Into<egl::EGLenum> for Target {
             Target::GlTexture3D => egl::GL_TEXTURE_3D,
             Target::GlRenderBuffer => egl::GL_RENDERBUFFER,
             Target::NativePixmapKHR => egl::NATIVE_PIXMAP_KHR,
-            _ => unreachable!(),
         }
     }
 }
@@ -89,6 +88,7 @@ impl<'a> Default for ImageBuffer<'a> {
 }
 
 /// Image with native resources.
+#[allow(dead_code)]
 pub struct Image<'a> {
     env: Option<&'a Environment>,
     display: egl::EGLDisplay,
@@ -96,7 +96,6 @@ pub struct Image<'a> {
     target: Target,
     buffer: ImageBuffer<'a>,
     finalizer: Option<Finalizer<'a>>,
-    //
     native: NativeHandle,
 }
 
@@ -110,7 +109,7 @@ impl<'a> Image<'a> {
         buffer: ImageBuffer<'a>,
         finalizer: Option<Finalizer<'a>>,
     ) -> Self {
-        let mut native: NativeHandle = Default::default();
+        let mut _native: NativeHandle = Default::default();
         match buffer {
             ImageBuffer::EglClientBuffer(client_buffer) => {
                 let a = crate::create_image(
@@ -118,10 +117,10 @@ impl<'a> Image<'a> {
                     env.get_context(),
                     target.into(),
                     client_buffer,
-                    std::ptr::null(),
+                    None,
                 )
                 .unwrap();
-                native = NativeHandle::EglImage(a);
+                _native = NativeHandle::EglImage(a);
             }
             ImageBuffer::Pixmap(ref pixmap) => {
                 let a = crate::create_image(
@@ -129,10 +128,10 @@ impl<'a> Image<'a> {
                     env.get_context(),
                     target.into(),
                     pixmap.id() as egl::EGLClientBuffer,
-                    std::ptr::null(),
+                    None,
                 )
                 .unwrap();
-                native = NativeHandle::EglImageKHR(a);
+                _native = NativeHandle::EglImageKHR(a);
             }
         }
         Self {
@@ -141,8 +140,8 @@ impl<'a> Image<'a> {
             context: env.get_context(),
             target,
             buffer,
-            finalizer: finalizer,
-            native: native,
+            finalizer,
+            native: _native,
         }
     }
 
@@ -153,12 +152,9 @@ impl<'a> Image<'a> {
         finalizer: Option<Finalizer<'a>>,
     ) -> Self {
         let mut ctx = env.get_context();
-        let mut native: NativeHandle = Default::default();
-        match target {
-            Target::NativePixmapKHR => {
-                ctx = egl::NO_CONTEXT;
-            }
-            _ => {}
+        let mut _native: NativeHandle = Default::default();
+        if let Target::NativePixmapKHR = target {
+            ctx = egl::NO_CONTEXT;
         }
         match buffer {
             ImageBuffer::EglClientBuffer(client_buffer) => {
@@ -167,10 +163,10 @@ impl<'a> Image<'a> {
                     ctx,
                     target as egl::EGLenum,
                     client_buffer,
-                    std::ptr::null(),
+                    None,
                 )
                 .unwrap();
-                native = NativeHandle::EglImageKHR(a);
+                _native = NativeHandle::EglImageKHR(a);
             }
             ImageBuffer::Pixmap(ref pixmap) => {
                 let a = crate::create_image_khr(
@@ -178,10 +174,10 @@ impl<'a> Image<'a> {
                     ctx,
                     target as egl::EGLenum,
                     pixmap.id() as egl::EGLClientBuffer,
-                    std::ptr::null(),
+                    None,
                 )
                 .unwrap();
-                native = NativeHandle::EglImageKHR(a);
+                _native = NativeHandle::EglImageKHR(a);
             }
         }
         Self {
@@ -190,8 +186,8 @@ impl<'a> Image<'a> {
             context: env.get_context(),
             target,
             buffer,
-            finalizer: finalizer,
-            native: native,
+            finalizer,
+            native: _native,
         }
     }
 
@@ -250,6 +246,7 @@ impl<'a> std::fmt::Debug for Image<'a> {
 }
 
 /// Build an Image with Chain style.
+#[derive(Default)]
 pub struct ImageBuilder<'a> {
     env: Option<&'a Environment>,
     display: Option<egl::EGLDisplay>,
