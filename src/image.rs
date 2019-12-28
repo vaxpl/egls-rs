@@ -26,6 +26,15 @@ impl Into<usize> for NativeHandle {
     }
 }
 
+impl Into<*const std::ffi::c_void> for NativeHandle {
+    fn into(self) -> *const std::ffi::c_void {
+        match self {
+            NativeHandle::EglImage(v) => v as *const std::ffi::c_void,
+            NativeHandle::EglImageKHR(v) => v as *const std::ffi::c_void,
+        }
+    }
+}
+
 /// Type of resource used as the image source.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd)]
 pub enum Target {
@@ -193,6 +202,10 @@ impl<'a> Image<'a> {
 
     pub fn id(&self) -> usize {
         self.native.into()
+    }
+
+    pub fn native(&self) -> NativeHandle {
+        self.native
     }
 }
 
