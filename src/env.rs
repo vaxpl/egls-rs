@@ -1,4 +1,6 @@
-use crate::{egl, so::SharedObject, EGLContext, EGLDisplay, EGLSurface, EGLint};
+use crate::{
+    egl, so::SharedObject, EGLContext, EGLDisplay, EGLNativeWindowType, EGLSurface, EGLint,
+};
 use std::collections::HashMap;
 use std::convert::TryInto;
 use std::vec::Vec;
@@ -10,7 +12,7 @@ pub struct Environment {
     display: EGLDisplay,
     context: EGLContext,
     surface: EGLSurface,
-    win: *mut egl::fbdev_window,
+    win: EGLNativeWindowType,
 }
 
 impl Environment {
@@ -19,7 +21,7 @@ impl Environment {
         display: EGLDisplay,
         context: EGLContext,
         surface: EGLSurface,
-        win: *mut egl::fbdev_window,
+        win: EGLNativeWindowType,
     ) -> Self {
         Self {
             so,
@@ -53,13 +55,17 @@ impl Environment {
 
 impl Drop for Environment {
     fn drop(&mut self) {
+        #[cfg(feature = "plat-mali-fbdev")]
         let _ = unsafe { Box::from_raw(self.win) };
     }
 }
 
 #[derive(Clone, Debug)]
 struct EnvironmentOptions {
+    #[cfg(feature = "plat-mali-fbdev")]
     native_window: egl::fbdev_window,
+    #[cfg(feature = "plat-x11")]
+    native_window: x11::xlib::Window,
     config_attribs: HashMap<u32, u32>,
     context_attribs: HashMap<u32, u32>,
     offscreen: bool,
@@ -68,10 +74,13 @@ struct EnvironmentOptions {
 impl Default for EnvironmentOptions {
     fn default() -> Self {
         Self {
+            #[cfg(feature = "plat-mali-fbdev")]
             native_window: egl::fbdev_window {
                 width: 1280,
                 height: 720,
             },
+            #[cfg(feature = "plat-x11")]
+            native_window: Default::default(),
             config_attribs: [
                 (egl::SAMPLES, 0),
                 (egl::RED_SIZE, 8),
@@ -151,6 +160,13 @@ impl EnvironmentBuilder {
         self
     }
 
+    #[cfg(feature = "plat-x11")]
+    pub fn with_window(mut self, win: x11::xlib::Window) -> Self {
+        self.options.native_window = win;
+        self
+    }
+
+    #[cfg(feature = "plat-mali-fbdev")]
     pub fn with_window_size(mut self, width: usize, height: usize) -> Self {
         self.options.native_window.width = width.try_into().unwrap();
         self.options.native_window.height = height.try_into().unwrap();
@@ -191,7 +207,10 @@ impl EnvironmentBuilder {
         )
         .unwrap();
 
+        #[cfg(feature = "plat-mali-fbdev")]
         let win = Box::into_raw(Box::new(self.options.native_window));
+        #[cfg(feature = "plat-x11")]
+        let win = self.options.native_window;
         let surface = crate::create_window_surface(display, configs[0], win, None).unwrap();
         let context = crate::create_context(
             display,
@@ -210,6 +229,7 @@ impl EnvironmentBuilder {
 mod tests {
     use super::*;
 
+    #[cfg(feature = "plat-mali-fbdev")]
     #[test]
     fn test_environment_builder() {
         let _env = EnvironmentBuilder::defaults()

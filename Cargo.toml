@@ -14,6 +14,7 @@ edition = "2018"
 
 [dependencies]
 lazy_static = { version = "^1.4.0", optional = true }
+x11 = { version = "^2.18.1", optional = true }
 
 [build-dependencies]
 gl_generator = "0.14.0"
@@ -32,4 +33,6 @@ hi3518ev200 = []
 hi3518ev300 = []
 hi3519av100 = []
 hi3531v100 = []
-hi3559av100 = [ "lazy_static" ]
+hi3559av100 = [ "lazy_static", "plat-mali-fbdev" ]
+plat-mali-fbdev = []
+plat-x11 = [ "x11" ]
