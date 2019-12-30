@@ -12,6 +12,9 @@ include! {"platform/mali-fbdev.rs"}
 #[cfg(feature = "plat-x11")]
 include! {"platform/x11.rs"}
 
+#[cfg(not(any(feature = "plat-mali-fbdev", feature = "plat-x11")))]
+include! {"platform/dummy.rs"}
+
 pub type NativeWindowType = EGLNativeWindowType;
 pub type NativePixmapType = EGLNativePixmapType;
 pub type NativeDisplayType = EGLNativeDisplayType;

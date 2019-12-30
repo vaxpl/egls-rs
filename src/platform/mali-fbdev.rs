@@ -1,5 +1,7 @@
-﻿#[cfg(feature = "hi3559av100")]
+﻿use crate::pixmap::PixmapFormat;
+#[cfg(feature = "hi3559av100")]
 use lazy_static::lazy_static;
+use std::convert::TryInto;
 
 pub const KHRONOS_SUPPORT_INT64: u32 = 1;
 pub const KHRONOS_SUPPORT_FLOAT: u32 = 1;
@@ -286,6 +288,125 @@ impl From<u64> for fbdev_pixmap_format {
     }
 }
 
+impl From<PixmapFormat> for fbdev_pixmap_format {
+    fn from(value: PixmapFormat) -> Self {
+        use PixmapFormat::*;
+        use fbdev_pixmap_format::*;
+
+        match value {
+            Bgr565 => PIXMAP_FORMAT_BGR565,
+            Rgb565 => PIXMAP_FORMAT_RGB565,
+            Bgr565Afbc => PIXMAP_FORMAT_BGR565_AFBC,
+            Rgb565Afbc => PIXMAP_FORMAT_RGB565_AFBC,
+            Bgr565AfbcSplitBlk => PIXMAP_FORMAT_BGR565_AFBC_SPLITBLK,
+            Rgb565AfbcSplitBlk => PIXMAP_FORMAT_RGB565_AFBC_SPLITBLK,
+            Bgr565AfbcWideBlk => PIXMAP_FORMAT_BGR565_AFBC_WIDEBLK,
+            Rgb565AfbcWideBlk => PIXMAP_FORMAT_RGB565_AFBC_WIDEBLK,
+            Abgr8888 => PIXMAP_FORMAT_ABGR8888,
+            Argb8888 => PIXMAP_FORMAT_ARGB8888,
+            Argb8888UI => PIXMAP_FORMAT_ARGB8888UI,
+            Bgra8888 => PIXMAP_FORMAT_BGRA8888,
+            Rgba8888 => PIXMAP_FORMAT_RGBA8888,
+            Abgr8888Afbc => PIXMAP_FORMAT_ABGR8888_AFBC,
+            Xbgr8888Afbc => PIXMAP_FORMAT_XBGR8888_AFBC,
+            Argb8888Afbc => PIXMAP_FORMAT_ARGB8888_AFBC,
+            Bgra8888Afbc => PIXMAP_FORMAT_BGRA8888_AFBC,
+            Rgba8888Afbc => PIXMAP_FORMAT_RGBA8888_AFBC,
+            Abgr8888AfbcSplitBlk => PIXMAP_FORMAT_ABGR8888_AFBC_SPLITBLK,
+            Xbgr8888AfbcSplitBlk => PIXMAP_FORMAT_XBGR8888_AFBC_SPLITBLK,
+            Argb8888AfbcSplitBlk => PIXMAP_FORMAT_ARGB8888_AFBC_SPLITBLK,
+            Bgra8888AfbcSplitBlk => PIXMAP_FORMAT_BGRA8888_AFBC_SPLITBLK,
+            Rgba8888AfbcSplitBlk => PIXMAP_FORMAT_RGBA8888_AFBC_SPLITBLK,
+            Abgr8888AfbcWideBlk => PIXMAP_FORMAT_ABGR8888_AFBC_SPLITBLK_WIDEBLK,
+            Xbgr8888AfbcWideBlk => PIXMAP_FORMAT_XBGR8888_AFBC_SPLITBLK_WIDEBLK,
+            Argb8888AfbcWideBlk => PIXMAP_FORMAT_ARGB8888_AFBC_SPLITBLK_WIDEBLK,
+            Bgra8888AfbcWideBlk => PIXMAP_FORMAT_BGRA8888_AFBC_SPLITBLK_WIDEBLK,
+            Rgba8888AfbcWideBlk => PIXMAP_FORMAT_RGBA8888_AFBC_SPLITBLK_WIDEBLK,
+            Xbgr8888 => PIXMAP_FORMAT_XBGR8888,
+            Xrgb8888 => PIXMAP_FORMAT_XRGB8888,
+            Bgrx8888 => PIXMAP_FORMAT_BGRX8888,
+            Rgbx8888 => PIXMAP_FORMAT_RGBX8888,
+            Bgr888 => PIXMAP_FORMAT_BGR888,
+            Rgb888 => PIXMAP_FORMAT_RGB888,
+            Bgr888Afbc => PIXMAP_FORMAT_BGR888_AFBC,
+            Rgb888Afbc => PIXMAP_FORMAT_RGB888_AFBC,
+            Bgr888AfbcSplitBlk => PIXMAP_FORMAT_BGR888_AFBC_SPLITBLK,
+            Rgb888AfbcSplitBlk => PIXMAP_FORMAT_RGB888_AFBC_SPLITBLK,
+            Bgr888AfbcWideBlk => PIXMAP_FORMAT_BGR888_AFBC_SPLITBLK_WIDEBLK,
+            Rgb888AfbcWideBlk => PIXMAP_FORMAT_RGB888_AFBC_SPLITBLK_WIDEBLK,
+            Abgr4444 => PIXMAP_FORMAT_ABGR4444,
+            Abgr4444Afbc => PIXMAP_FORMAT_ABGR4444_AFBC,
+            Argb4444 => PIXMAP_FORMAT_ARGB4444,
+            Bgra4444 => PIXMAP_FORMAT_BGRA4444,
+            Rgba4444 => PIXMAP_FORMAT_RGBA4444,
+            Abgr1555 => PIXMAP_FORMAT_ABGR1555,
+            Abgr1555Afbc => PIXMAP_FORMAT_ABGR1555_AFBC,
+            Argb1555 => PIXMAP_FORMAT_ARGB1555,
+            Bgra5551 => PIXMAP_FORMAT_BGRA5551,
+            Rgba5551 => PIXMAP_FORMAT_RGBA5551,
+            L8 => PIXMAP_FORMAT_L8,
+            R8 => PIXMAP_FORMAT_R8,
+            Rg8 => PIXMAP_FORMAT_RG8,
+            R16 => PIXMAP_FORMAT_R16,
+            Rg16 => PIXMAP_FORMAT_RG16,
+            Yv12Bt601Narrow => PIXMAP_FORMAT_YV12_BT601_NARROW,
+            Yv12Bt601Wide => PIXMAP_FORMAT_YV12_BT601_WIDE,
+            Yv12Bt709Narrow => PIXMAP_FORMAT_YV12_BT709_NARROW,
+            Yv12Bt709Wide => PIXMAP_FORMAT_YV12_BT709_WIDE,
+            Nv12Bt601Narrow => PIXMAP_FORMAT_NV12_BT601_NARROW,
+            Nv12Bt601Wide => PIXMAP_FORMAT_NV12_BT601_WIDE,
+            Nv12Bt709Narrow => PIXMAP_FORMAT_NV12_BT709_NARROW,
+            Nv12Bt709Wide => PIXMAP_FORMAT_NV12_BT709_WIDE,
+            YuyvBt601Narrow => PIXMAP_FORMAT_YUYV_BT601_NARROW,
+            YuyvBt601Wide => PIXMAP_FORMAT_YUYV_BT601_WIDE,
+            YuyvBt709Narrow => PIXMAP_FORMAT_YUYV_BT709_NARROW,
+            YuyvBt709Wide => PIXMAP_FORMAT_YUYV_BT709_WIDE,
+            Nv21Bt601Narrow => PIXMAP_FORMAT_NV21_BT601_NARROW,
+            Nv21Bt601Wide => PIXMAP_FORMAT_NV21_BT601_WIDE,
+            Nv21Bt709Narrow => PIXMAP_FORMAT_NV21_BT709_NARROW,
+            Nv21Bt709Wide => PIXMAP_FORMAT_NV21_BT709_WIDE,
+            Nv16Bt601Narrow => PIXMAP_FORMAT_NV16_BT601_NARROW,
+            Nv16Bt601Wide => PIXMAP_FORMAT_NV16_BT601_WIDE,
+            Nv16Bt709Narrow => PIXMAP_FORMAT_NV16_BT709_NARROW,
+            Nv16Bt709Wide => PIXMAP_FORMAT_NV16_BT709_WIDE,
+            Yuv4208BitBt601NarrowAfbc => PIXMAP_FORMAT_YUV420_8BIT_BT601_NARROW_AFBC,
+            Yuv4208BitBt601WideAfbc => PIXMAP_FORMAT_YUV420_8BIT_BT601_WIDE_AFBC,
+            Yuv4208BitBt709NarrowAfbc => PIXMAP_FORMAT_YUV420_8BIT_BT709_NARROW_AFBC,
+            Yuv4208BitBt709WideAfbc => PIXMAP_FORMAT_YUV420_8BIT_BT709_WIDE_AFBC,
+            Yuv4228BitBt601NarrowAfbc => PIXMAP_FORMAT_YUV422_8BIT_BT601_NARROW_AFBC,
+            Yuv4228BitBt601WideAfbc => PIXMAP_FORMAT_YUV422_8BIT_BT601_WIDE_AFBC,
+            Yuv4228BitBt709NarrowAfbc => PIXMAP_FORMAT_YUV422_8BIT_BT709_NARROW_AFBC,
+            Yuv4228BitBt709WideAfbc => PIXMAP_FORMAT_YUV422_8BIT_BT709_WIDE_AFBC,
+            Yuv4208BitBt601NarrowAfbcSplitBlk  => PIXMAP_FORMAT_YUV420_8BIT_BT601_NARROW_AFBC_SPLITBLK,
+            Yuv4208BitBt601WideAfbcSplitBlk  => PIXMAP_FORMAT_YUV420_8BIT_BT601_WIDE_AFBC_SPLITBLK,
+            Yuv4208BitBt709NarrowAfbcSplitBlk  => PIXMAP_FORMAT_YUV420_8BIT_BT709_NARROW_AFBC_SPLITBLK,
+            Yuv4208BitBt709WideAfbcSplitBlk  => PIXMAP_FORMAT_YUV420_8BIT_BT709_WIDE_AFBC_SPLITBLK,
+            Yuv4208BitBt601NarrowAfbcWideBlk => PIXMAP_FORMAT_YUV420_8BIT_BT601_NARROW_AFBC_WIDEBLK,
+            Yuv4208BitBt601WideAfbcWideBlk => PIXMAP_FORMAT_YUV420_8BIT_BT601_WIDE_AFBC_WIDEBLK,
+            Yuv4208BitBt709NarrowAfbcWideBlk => PIXMAP_FORMAT_YUV420_8BIT_BT709_NARROW_AFBC_WIDEBLK,
+            Yuv4208BitBt709WideAfbcWideBlk => PIXMAP_FORMAT_YUV420_8BIT_BT709_WIDE_AFBC_WIDEBLK,
+            Yuv4228BitBt601NarrowAfbcWideBlk => PIXMAP_FORMAT_YUV422_8BIT_BT601_NARROW_AFBC_WIDEBLK,
+            Yuv4228BitBt601WideAfbcWideBlk => PIXMAP_FORMAT_YUV422_8BIT_BT601_WIDE_AFBC_WIDEBLK,
+            Yuv4228BitBt709NarrowAfbcWideBlk => PIXMAP_FORMAT_YUV422_8BIT_BT709_NARROW_AFBC_WIDEBLK,
+            Yuv4228BitBt709WideAfbcWideBlk => PIXMAP_FORMAT_YUV422_8BIT_BT709_WIDE_AFBC_WIDEBLK,
+            Y0l2 => PIXMAP_FORMAT_Y0L2,
+            P010 => PIXMAP_FORMAT_P010,
+            P210 => PIXMAP_FORMAT_P210,
+            Y210 => PIXMAP_FORMAT_Y210,
+            Y410 => PIXMAP_FORMAT_Y410,
+            Yuv42010BitAfbc => PIXMAP_FORMAT_YUV420_10BIT_AFBC,
+            Yuv42210BitAfbc => PIXMAP_FORMAT_YUV422_10BIT_AFBC,
+            Yuv42010BitAfbcWideBlk => PIXMAP_FORMAT_YUV420_10BIT_AFBC_WIDEBLK,
+            Yuv42210BitAfbcWideBlk => PIXMAP_FORMAT_YUV422_10BIT_AFBC_WIDEBLK,
+            Sabgr8888 => PIXMAP_FORMAT_sABGR8888,
+            Sargb8888 => PIXMAP_FORMAT_sARGB8888,
+            Sxbgr8888 => PIXMAP_FORMAT_sXBGR8888,
+            Butt => PIXMAP_FORMAT_BUTT,
+            _ => unreachable!(),
+        }
+    }
+}
+
 impl Into<u64> for fbdev_pixmap_format {
     fn into(self) -> u64 {
         use fbdev_pixmap_format::*;
@@ -526,8 +647,8 @@ pub unsafe fn hi_dbe_wrap_dma_buf_fd(phy_addr: u64, size: u64) -> std::os::raw::
 }
 
 impl linux_pixmap {
-    #[cfg(feature = "hi3559av100")]
-    pub fn new(phy_addr: u64, width: isize, height: isize, format: u64) -> Self {
+    #[cfg(feature = "plat-mali-fbdev")]
+    pub fn new(phy_addr: u64, width: isize, height: isize, format: PixmapFormat) -> Self {
         use fbdev_pixmap_format::*;
 
         let w: khronos_usize_t = width.try_into().unwrap();
@@ -535,7 +656,7 @@ impl linux_pixmap {
         let mut dma: linux_pixmap = Default::default();
         dma.width = width.try_into().unwrap();
         dma.height = height.try_into().unwrap();
-        dma.pixmap_format = format;
+        dma.pixmap_format = fbdev_pixmap_format::from(format).into();
 
         match fbdev_pixmap_format::from(format) {
             PIXMAP_FORMAT_BGR565
@@ -652,7 +773,7 @@ pub struct NativePixmap {
 }
 
 impl NativePixmap {
-    pub fn new(phy_addr: u64, width: isize, height: isize, format: u64) -> Self {
+    pub fn new(phy_addr: u64, width: isize, height: isize, format: PixmapFormat) -> Self {
         unsafe {
             let dma = Box::new(linux_pixmap::new(phy_addr, width, height, format));
             let dma = Box::into_raw(dma);

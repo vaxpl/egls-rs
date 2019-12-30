@@ -1,78 +1,162 @@
 use crate::{egl, egl::EGLNativePixmapType};
 use std::cell::Cell;
 
-#[cfg(feature = "plat-mali-fbdev")]
-use crate::egl::fbdev_pixmap_format::*;
-
-#[cfg(feature = "plat-mali-fbdev")]
 #[derive(Clone, Copy, Debug)]
 pub enum PixmapFormat {
-    Abgr1555 = PIXMAP_FORMAT_ABGR1555 as isize,
-    Abgr4444 = PIXMAP_FORMAT_ABGR4444 as isize,
-    Abgr8888 = PIXMAP_FORMAT_ABGR8888 as isize,
-    Argb1555 = PIXMAP_FORMAT_ARGB1555 as isize,
-    Argb4444 = PIXMAP_FORMAT_ARGB4444 as isize,
-    Argb8888 = PIXMAP_FORMAT_ARGB8888 as isize,
-    Argb8888UI = PIXMAP_FORMAT_ARGB8888UI as isize,
-    Bgr565 = PIXMAP_FORMAT_BGR565 as isize,
-    Bgr888 = PIXMAP_FORMAT_BGR888 as isize,
-    Bgra4444 = PIXMAP_FORMAT_BGRA4444 as isize,
-    Bgra5551 = PIXMAP_FORMAT_BGRA5551 as isize,
-    Bgra8888 = PIXMAP_FORMAT_BGRA8888 as isize,
-    Bgrx8888 = PIXMAP_FORMAT_BGRX8888 as isize,
-    L8 = PIXMAP_FORMAT_L8 as isize,
-    Nv12Bt601Narrow = PIXMAP_FORMAT_NV12_BT601_NARROW as isize,
-    Nv12Bt601Wide = PIXMAP_FORMAT_NV12_BT601_WIDE as isize,
-    Nv12Bt709Narrow = PIXMAP_FORMAT_NV12_BT709_NARROW as isize,
-    Nv12Bt709Wide = PIXMAP_FORMAT_NV12_BT709_WIDE as isize,
-    Nv16Bt601Narrow = PIXMAP_FORMAT_NV16_BT601_NARROW as isize,
-    Nv16Bt601Wide = PIXMAP_FORMAT_NV16_BT601_WIDE as isize,
-    Nv16Bt709Narrow = PIXMAP_FORMAT_NV16_BT709_NARROW as isize,
-    Nv16Bt709Wide = PIXMAP_FORMAT_NV16_BT709_WIDE as isize,
-    Nv21Bt601Narrow = PIXMAP_FORMAT_NV21_BT601_NARROW as isize,
-    Nv21Bt601Wide = PIXMAP_FORMAT_NV21_BT601_WIDE as isize,
-    Nv21Bt709Narrow = PIXMAP_FORMAT_NV21_BT709_NARROW as isize,
-    Nv21Bt709Wide = PIXMAP_FORMAT_NV21_BT709_WIDE as isize,
-    R8 = PIXMAP_FORMAT_R8 as isize,
-    R16 = PIXMAP_FORMAT_R16 as isize,
-    Rg8 = PIXMAP_FORMAT_RG8 as isize,
-    Rg16 = PIXMAP_FORMAT_RG16 as isize,
-    Rgb565 = PIXMAP_FORMAT_RGB565 as isize,
-    Rgb888 = PIXMAP_FORMAT_RGB888 as isize,
-    Rgba4444 = PIXMAP_FORMAT_RGBA4444 as isize,
-    Rgba5551 = PIXMAP_FORMAT_RGBA5551 as isize,
-    Rgba8888 = PIXMAP_FORMAT_RGBA8888 as isize,
-    Rgbx8888 = PIXMAP_FORMAT_RGBX8888 as isize,
-    Sabgr8888 = PIXMAP_FORMAT_sABGR8888 as isize,
-    Sargb8888 = PIXMAP_FORMAT_sARGB8888 as isize,
-    Sxbgr8888 = PIXMAP_FORMAT_sXBGR8888 as isize,
-    Xbgr8888 = PIXMAP_FORMAT_XBGR8888 as isize,
-    Xrgb8888 = PIXMAP_FORMAT_XRGB8888 as isize,
-    Y0l2 = PIXMAP_FORMAT_Y0L2 as isize,
-    Y210 = PIXMAP_FORMAT_Y210 as isize,
-    Y410 = PIXMAP_FORMAT_Y410 as isize,
-    Yv12Bt601Narrow = PIXMAP_FORMAT_YV12_BT601_NARROW as isize,
-    Yv12Bt601Wide = PIXMAP_FORMAT_YV12_BT601_WIDE as isize,
-    Yv12Bt709Narrow = PIXMAP_FORMAT_YV12_BT709_NARROW as isize,
-    Yv12Bt709Wide = PIXMAP_FORMAT_YV12_BT709_WIDE as isize,
-    YuyvBt601Narrow = PIXMAP_FORMAT_YUYV_BT601_NARROW as isize,
-    YuyvBt601Wide = PIXMAP_FORMAT_YUYV_BT601_WIDE as isize,
-    YuyvBt709Narrow = PIXMAP_FORMAT_YUYV_BT709_NARROW as isize,
-    YuyvBt709Wide = PIXMAP_FORMAT_YUYV_BT709_WIDE as isize,
-    Yuv4208BitBt601NarrowAfbc = PIXMAP_FORMAT_YUV420_8BIT_BT601_NARROW_AFBC as isize,
-    Yuv4208BitBt601WideAfbc = PIXMAP_FORMAT_YUV420_8BIT_BT601_WIDE_AFBC as isize,
-    Yuv4208BitBt709NarrowAfbc = PIXMAP_FORMAT_YUV420_8BIT_BT709_NARROW_AFBC as isize,
-    Yuv4208BitBt709WideAfbc = PIXMAP_FORMAT_YUV420_8BIT_BT709_WIDE_AFBC as isize,
-    Yuv4228BitBt601NarrowAfbc = PIXMAP_FORMAT_YUV422_8BIT_BT601_NARROW_AFBC as isize,
-    Yuv4228BitBt601WideAfbc = PIXMAP_FORMAT_YUV422_8BIT_BT601_WIDE_AFBC as isize,
-    Yuv4228BitBt709NarrowAfbc = PIXMAP_FORMAT_YUV422_8BIT_BT709_NARROW_AFBC as isize,
-    Yuv4228BitBt709WideAfbc = PIXMAP_FORMAT_YUV422_8BIT_BT709_WIDE_AFBC as isize,
-}
-
-#[cfg(not(feature = "plat-mali-fbdev"))]
-#[derive(Clone, Copy, Debug)]
-pub enum PixmapFormat {
+    // ABGR_1_5_5_5
+    Abgr1555,
+    Abgr1555Afbc,
+    // ABGR_4_4_4_4
+    Abgr4444,
+    Abgr4444Afbc,
+    // ABGR_8_8_8_8
+    Abgr8888,
+    Abgr8888Afbc,
+    Abgr8888AfbcSplitBlk,
+    Abgr8888AfbcWideBlk,
+    // ARGB_1_5_5_5
+    Argb1555,
+    // ARGB_4_4_4_4
+    Argb4444,
+    // ARGB_8_8_8_8
     Argb8888,
+    Argb8888Afbc,
+    Argb8888AfbcSplitBlk,
+    Argb8888AfbcWideBlk,
+    // ARGB 32Bits
+    Argb8888UI,
+    // BGR_5_6_5
+    Bgr565,
+    Bgr565Afbc,
+    Bgr565AfbcSplitBlk,
+    Bgr565AfbcWideBlk,
+    // BGR_8_8_8
+    Bgr888,
+    Bgr888Afbc,
+    Bgr888AfbcSplitBlk,
+    Bgr888AfbcWideBlk,
+    // BGRA_4_4_4_4
+    Bgra4444,
+    // BGRA_5_5_5_1
+    Bgra5551,
+    // BGRA_8_8_8_8
+    Bgra8888,
+    Bgra8888Afbc,
+    Bgra8888AfbcSplitBlk,
+    Bgra8888AfbcWideBlk,
+    // BGRX_8_8_8_8
+    Bgrx8888,
+    // Luminance
+    L8,
+    // NV12
+    Nv12Bt601Narrow,
+    Nv12Bt601Wide,
+    Nv12Bt709Narrow,
+    Nv12Bt709Wide,
+    // NV16
+    Nv16Bt601Narrow,
+    Nv16Bt601Wide,
+    Nv16Bt709Narrow,
+    Nv16Bt709Wide,
+    // NV16
+    Nv21Bt601Narrow,
+    Nv21Bt601Wide,
+    Nv21Bt709Narrow,
+    Nv21Bt709Wide,
+    // P
+    P010,
+    P210,
+    // Bayer
+    R8,
+    R16,
+    Rg8,
+    Rg16,
+    // RGB_5_6_5
+    Rgb565,
+    Rgb565Afbc,
+    Rgb565AfbcSplitBlk,
+    Rgb565AfbcWideBlk,
+    // RGB_8_8_8
+    Rgb888,
+    Rgb888Afbc,
+    Rgb888AfbcSplitBlk,
+    Rgb888AfbcWideBlk,
+    // RGBA_4_4_4_4
+    Rgba4444,
+    // RGBA_5_5_5_1
+    Rgba5551,
+    // RGBA_8_8_8_8
+    Rgba8888,
+    Rgba8888Afbc,
+    Rgba8888AfbcSplitBlk,
+    Rgba8888AfbcWideBlk,
+    // RGBX_8_8_8_8
+    Rgbx8888,
+    Rgbx8888Afbc,
+    Rgbx8888AfbcSplitBlk,
+    Rgbx8888AfbcWideBlk,
+    // s[ABGR/RGBA/XBGR]_8_8_8_8
+    Sabgr8888,
+    Sargb8888,
+    Sxbgr8888,
+    // XBGR_8_8_8_8
+    Xbgr8888,
+    Xbgr8888Afbc,
+    Xbgr8888AfbcSplitBlk,
+    Xbgr8888AfbcWideBlk,
+    // XRGB_8_8_8_8
+    Xrgb8888,
+    Xrgb8888Afbc,
+    Xrgb8888AfbcSplitBlk,
+    Xrgb8888AfbcWideBlk,
+    // Y
+    Y0l2,
+    Y210,
+    Y410,
+    // YV12
+    Yv12Bt601Narrow,
+    Yv12Bt601Wide,
+    Yv12Bt709Narrow,
+    Yv12Bt709Wide,
+    // YUYV
+    YuyvBt601Narrow,
+    YuyvBt601Wide,
+    YuyvBt709Narrow,
+    YuyvBt709Wide,
+    // YUV420 8Bit
+    Yuv4208BitBt601NarrowAfbc,
+    Yuv4208BitBt601WideAfbc,
+    Yuv4208BitBt709NarrowAfbc,
+    Yuv4208BitBt709WideAfbc,
+    Yuv4208BitBt601NarrowAfbcSplitBlk,
+    Yuv4208BitBt601WideAfbcSplitBlk,
+    Yuv4208BitBt709NarrowAfbcSplitBlk,
+    Yuv4208BitBt709WideAfbcSplitBlk,
+    Yuv4208BitBt601NarrowAfbcWideBlk,
+    Yuv4208BitBt601WideAfbcWideBlk,
+    Yuv4208BitBt709NarrowAfbcWideBlk,
+    Yuv4208BitBt709WideAfbcWideBlk,
+    // YUV422 8Bit
+    Yuv4228BitBt601NarrowAfbc,
+    Yuv4228BitBt601WideAfbc,
+    Yuv4228BitBt709NarrowAfbc,
+    Yuv4228BitBt709WideAfbc,
+    Yuv4228BitBt601NarrowAfbcSplitBlk,
+    Yuv4228BitBt601WideAfbcSplitBlk,
+    Yuv4228BitBt709NarrowAfbcSplitBlk,
+    Yuv4228BitBt709WideAfbcSplitBlk,
+    Yuv4228BitBt601NarrowAfbcWideBlk,
+    Yuv4228BitBt601WideAfbcWideBlk,
+    Yuv4228BitBt709NarrowAfbcWideBlk,
+    Yuv4228BitBt709WideAfbcWideBlk,
+    // YUV420 10Bit
+    Yuv42010BitAfbc,
+    Yuv42010BitAfbcWideBlk,
+    // YUV422 10Bit
+    Yuv42210BitAfbc,
+    Yuv42210BitAfbcWideBlk,
+    //
+    Butt,
 }
 
 impl Default for PixmapFormat {
@@ -179,7 +263,7 @@ impl<'a> PixmapBuilder<'a> {
 
     pub fn build(&self) -> Result<Pixmap<'a>, String> {
         Ok(Pixmap::new(
-            egl::NativePixmap::new(self.phy_addr, self.width, self.height, self.format as u64),
+            egl::NativePixmap::new(self.phy_addr, self.width, self.height, self.format),
             self.finalizer.replace(None),
         ))
     }

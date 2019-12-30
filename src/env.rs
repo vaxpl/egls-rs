@@ -66,6 +66,8 @@ struct EnvironmentOptions {
     native_window: egl::fbdev_window,
     #[cfg(feature = "plat-x11")]
     native_window: x11::xlib::Window,
+    #[cfg(not(any(feature = "plat-mali-fbdev", feature = "plat-x11")))]
+    native_window: usize,
     config_attribs: HashMap<u32, u32>,
     context_attribs: HashMap<u32, u32>,
     offscreen: bool,
@@ -81,6 +83,8 @@ impl Default for EnvironmentOptions {
             },
             #[cfg(feature = "plat-x11")]
             native_window: Default::default(),
+            #[cfg(not(any(feature = "plat-mali-fbdev", feature = "plat-x11")))]
+            native_window: 0,
             config_attribs: [
                 (egl::SAMPLES, 0),
                 (egl::RED_SIZE, 8),
@@ -160,8 +164,20 @@ impl EnvironmentBuilder {
         self
     }
 
+    #[cfg(feature = "plat-mali-fbdev")]
+    pub fn with_window(mut self, win: egl::fbdev_window) -> Self {
+        self.options.native_window = win;
+        self
+    }
+
     #[cfg(feature = "plat-x11")]
     pub fn with_window(mut self, win: x11::xlib::Window) -> Self {
+        self.options.native_window = win;
+        self
+    }
+
+    #[cfg(not(any(feature = "plat-mali-fbdev", feature = "plat-x11")))]
+    pub fn with_window(mut self, win: usize) -> Self {
         self.options.native_window = win;
         self
     }
@@ -170,6 +186,16 @@ impl EnvironmentBuilder {
     pub fn with_window_size(mut self, width: usize, height: usize) -> Self {
         self.options.native_window.width = width.try_into().unwrap();
         self.options.native_window.height = height.try_into().unwrap();
+        self
+    }
+
+    #[cfg(feature = "plat-x11")]
+    pub fn with_window_size(mut self, _width: usize, _height: usize) -> Self {
+        self
+    }
+
+    #[cfg(not(any(feature = "plat-mali-fbdev", feature = "plat-x11")))]
+    pub fn with_window_size(mut self, _width: usize, _height: usize) -> Self {
         self
     }
 
@@ -210,6 +236,8 @@ impl EnvironmentBuilder {
         #[cfg(feature = "plat-mali-fbdev")]
         let win = Box::into_raw(Box::new(self.options.native_window));
         #[cfg(feature = "plat-x11")]
+        let win = self.options.native_window;
+        #[cfg(not(any(feature = "plat-mali-fbdev", feature = "plat-x11")))]
         let win = self.options.native_window;
         let surface = crate::create_window_surface(display, configs[0], win, None).unwrap();
         let context = crate::create_context(
