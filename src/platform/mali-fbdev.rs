@@ -724,7 +724,10 @@ impl linux_pixmap {
                 dma.planes[0].offset = 0;
                 dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size);
             }
-            PIXMAP_FORMAT_NV21_BT709_WIDE => {
+            PIXMAP_FORMAT_NV21_BT601_NARROW
+            | PIXMAP_FORMAT_NV21_BT601_WIDE
+            | PIXMAP_FORMAT_NV21_BT709_NARROW
+            | PIXMAP_FORMAT_NV21_BT709_WIDE => {
                 dma.planes[0].stride = w;
                 dma.planes[0].size = dma.planes[0].stride * h;
                 dma.planes[0].offset = 0;
