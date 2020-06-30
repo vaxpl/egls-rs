@@ -626,26 +626,6 @@ lazy_static! {
     static ref DBE: DmaBufferExporter = DmaBufferExporter::new();
 }
 
-#[cfg(feature = "hi3559av100")]
-pub unsafe fn hi_dbe_wrap_dma_buf_fd(phy_addr: u64, size: u64) -> std::os::raw::c_int {
-    let mut wrap: hidbe_ioctl_wrap = Default::default();
-    let mut dmabuf_fd: std::os::raw::c_int = -1;
-    let cstr = std::ffi::CStr::from_bytes_with_nul(b"/dev/hi_dbe\0").unwrap();
-    let fd = libc::open(cstr.as_ptr(), libc::O_RDWR);
-    assert!(fd > 0, "Failed to open: `{:?}`!", cstr);
-    wrap.dbe_phyaddr = phy_addr;
-    wrap.dbe_size = size;
-    dmabuf_fd = libc::ioctl(fd, DBE_COMMAND_WRAP.try_into().unwrap(), &wrap);
-    libc::close(fd);
-    assert!(
-        dmabuf_fd > 0,
-        "Failed to wrap with dma for {} @ {:X}!",
-        phy_addr,
-        size
-    );
-    dmabuf_fd
-}
-
 impl linux_pixmap {
     #[cfg(feature = "plat-mali-fbdev")]
     pub fn new(phy_addr: u64, width: isize, height: isize, format: PixmapFormat) -> Self {
