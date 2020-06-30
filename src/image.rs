@@ -99,7 +99,6 @@ impl<'a> Default for ImageBuffer<'a> {
 /// Image with native resources.
 #[allow(dead_code)]
 pub struct Image<'a> {
-    env: Option<&'a Environment>,
     display: egl::EGLDisplay,
     context: egl::EGLContext,
     target: Target,
@@ -108,12 +107,12 @@ pub struct Image<'a> {
     native: NativeHandle,
 }
 
-unsafe impl<'a> Send for Image<'a> {}
-unsafe impl<'a> Sync for Image<'a> {}
+// unsafe impl<'a> Send for Image<'a> {}
+// unsafe impl<'a> Sync for Image<'a> {}
 
 impl<'a> Image<'a> {
     pub fn new(
-        env: &'a Environment,
+        env: &'_ Environment,
         target: Target,
         buffer: ImageBuffer<'a>,
         finalizer: Option<Finalizer<'a>>,
@@ -144,7 +143,6 @@ impl<'a> Image<'a> {
             }
         }
         Self {
-            env: Some(env),
             display: env.get_display(),
             context: env.get_context(),
             target,
@@ -155,7 +153,7 @@ impl<'a> Image<'a> {
     }
 
     pub fn new_khr(
-        env: &'a Environment,
+        env: &'_ Environment,
         target: Target,
         buffer: ImageBuffer<'a>,
         finalizer: Option<Finalizer<'a>>,
@@ -190,7 +188,6 @@ impl<'a> Image<'a> {
             }
         }
         Self {
-            env: Some(env),
             display: env.get_display(),
             context: env.get_context(),
             target,
@@ -212,7 +209,6 @@ impl<'a> Image<'a> {
 impl<'a> Default for Image<'a> {
     fn default() -> Self {
         Self {
-            env: None,
             display: egl::NO_DISPLAY,
             context: egl::NO_CONTEXT,
             target: Default::default(),
@@ -261,91 +257,81 @@ impl<'a> std::fmt::Debug for Image<'a> {
 /// Build an Image with Chain style.
 #[derive(Default)]
 pub struct ImageBuilder<'a> {
-    env: Option<&'a Environment>,
     display: Option<egl::EGLDisplay>,
     context: Option<egl::EGLContext>,
-    target: Cell<Target>,
-    buffer: Cell<ImageBuffer<'a>>,
+    target: Option<Target>,
+    buffer: Option<ImageBuffer<'a>>,
     is_khr: bool,
-    finalizer: Cell<Option<Finalizer<'a>>>,
+    finalizer: Option<Finalizer<'a>>,
 }
 
 impl<'a> ImageBuilder<'a> {
     pub fn new() -> Self {
         Self {
-            env: None,
             display: None,
             context: None,
-            target: Cell::new(Default::default()),
-            buffer: Cell::new(Default::default()),
+            target: Some(Default::default()),
+            buffer: Some(Default::default()),
             is_khr: false,
-            finalizer: Cell::new(None),
+            finalizer: None,
         }
     }
 
-    pub fn with_env(&mut self, env: &'a Environment) -> &mut Self {
-        self.env = Some(env);
-        self
-    }
-
-    pub fn with_display(&mut self, display: egl::EGLDisplay) -> &mut Self {
+    pub fn with_display(mut self, display: egl::EGLDisplay) -> Self {
         self.display = Some(display);
         self
     }
 
-    pub fn with_context(&mut self, context: egl::EGLContext) -> &mut Self {
+    pub fn with_context(mut self, context: egl::EGLContext) -> Self {
         self.context = Some(context);
         self
     }
 
-    pub fn with_target(&mut self, target: Target) -> &mut Self {
-        self.target.replace(target);
+    pub fn with_target(mut self, target: Target) -> Self {
+        self.target = Some(target);
         self
     }
 
-    pub fn with_buffer(&mut self, buffer: ImageBuffer<'a>) -> &mut Self {
+    pub fn with_buffer(mut self, buffer: ImageBuffer<'a>) -> Self {
         // Fix the Target if Use Pixmap Buffer
         match buffer {
             ImageBuffer::Pixmap(_) => {
-                self.target.replace(Target::NativePixmapKHR);
+                self.target = Some(Target::NativePixmapKHR);
             }
             ImageBuffer::EglClientBuffer(_) => {}
         }
-        self.buffer.replace(buffer);
+        self.buffer = Some(buffer);
         self
     }
 
-    pub fn with_khr(&mut self) -> &mut Self {
+    pub fn with_khr(mut self) -> Self {
         self.is_khr = true;
         self
     }
 
-    pub fn with_finalizer<F>(&mut self, finalizer: F) -> &mut Self
+    pub fn with_finalizer<F>(mut self, finalizer: F) -> Self
     where
         F: Fn(&Image) + 'a,
     {
-        self.finalizer.replace(Some(Box::new(finalizer)));
+        self.finalizer = Some(Box::new(finalizer));
         self
     }
 
-    pub fn build(&self) -> Result<Image<'a>, Error> {
-        if let Some(env) = self.env {
-            if self.is_khr {
-                return Ok(Image::new_khr(
-                    env,
-                    self.target.replace(Default::default()),
-                    self.buffer.replace(Default::default()),
-                    self.finalizer.replace(None),
-                ));
-            } else {
-                return Ok(Image::new(
-                    env,
-                    self.target.replace(Default::default()),
-                    self.buffer.replace(Default::default()),
-                    self.finalizer.replace(None),
-                ));
-            }
+    pub fn build(self, env: &'_ Environment) -> Result<Image<'a>, Error> {
+        if self.is_khr {
+            Ok(Image::new_khr(
+                env,
+                self.target.unwrap_or_default(),
+                self.buffer.unwrap_or_default(),
+                self.finalizer,
+            ))
+        } else {
+            Ok(Image::new(
+                env,
+                self.target.unwrap_or_default(),
+                self.buffer.unwrap_or_default(),
+                self.finalizer,
+            ))
         }
-        Err(Error::new())
     }
 }
