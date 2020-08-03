@@ -1,5 +1,4 @@
 use crate::{egl, Environment, Error, Pixmap};
-use std::cell::Cell;
 
 /// Callback for Image cleanup native resources.
 pub type Finalizer<'a> = Box<dyn Fn(&Image) + 'a>;
