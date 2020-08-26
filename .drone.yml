@@ -1,0 +1,28 @@
+﻿---
+kind: pipeline
+type: exec
+name: default
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: configure
+  commands:
+  - cp .cargo/hi3559av100.toml .cargo/config.toml
+
+- name: check format and lints
+  environment:
+
+  commands:
+  - cargo fmt -- --check
+  - cargo clippy --features="hi3559av100" --target=aarch64-unknown-linux-gnu
+
+- name: build for target
+  environment:
+
+  commands:
+  - cargo build --features="hi3559av100" --target=aarch64-unknown-linux-gnu
+
+...
