@@ -51,6 +51,10 @@ impl Environment {
     pub fn swap_buffers(&self) {
         crate::swap_buffers(self.display, self.surface).unwrap();
     }
+
+    pub fn swap_interval(&self, val: i32) {
+        crate::swap_interval(self.display, val).unwrap();
+    }
 }
 
 impl Drop for Environment {
