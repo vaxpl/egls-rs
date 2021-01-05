@@ -218,21 +218,23 @@ impl<'a> std::fmt::Debug for Pixmap<'a> {
 }
 
 #[derive(Default)]
-pub struct PixmapBuilder<'a> {
+pub struct PixmapBuilder<'a, 'b> {
     phy_addr: u64,
     width: isize,
     height: isize,
     format: PixmapFormat,
+    strides: Option<&'b [usize]>,
     finalizer: Cell<Option<Finalizer<'a>>>,
 }
 
-impl<'a> PixmapBuilder<'a> {
+impl<'a, 'b> PixmapBuilder<'a, 'b> {
     pub fn new() -> Self {
         Self {
             phy_addr: 0,
             width: 0,
             height: 0,
             format: Default::default(),
+            strides: None,
             finalizer: Cell::new(None),
         }
     }
@@ -253,6 +255,11 @@ impl<'a> PixmapBuilder<'a> {
         self
     }
 
+    pub fn with_strides(&mut self, strides: &'b [usize]) -> &mut Self {
+        self.strides = Some(strides);
+        self
+    }
+
     pub fn with_finalizer<F>(&mut self, finalizer: F) -> &mut Self
     where
         F: Fn(&Pixmap) + 'a,
@@ -262,9 +269,23 @@ impl<'a> PixmapBuilder<'a> {
     }
 
     pub fn build(&self) -> Result<Pixmap<'a>, String> {
-        Ok(Pixmap::new(
-            egl::NativePixmap::new(self.phy_addr, self.width, self.height, self.format),
-            self.finalizer.replace(None),
-        ))
+        let r = if let Some(s) = self.strides {
+            Pixmap::new(
+                egl::NativePixmap::with_strides(
+                    self.phy_addr,
+                    self.width,
+                    self.height,
+                    self.format,
+                    s,
+                ),
+                self.finalizer.replace(None),
+            )
+        } else {
+            Pixmap::new(
+                egl::NativePixmap::new(self.phy_addr, self.width, self.height, self.format),
+                self.finalizer.replace(None),
+            )
+        };
+        Ok(r)
     }
 }
