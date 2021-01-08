@@ -717,6 +717,32 @@ impl linux_pixmap {
                 dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
                 dma.handles[1].fd = unsafe { dma.handles[0].fd };
             }
+            PIXMAP_FORMAT_NV16_BT601_NARROW
+            | PIXMAP_FORMAT_NV16_BT601_WIDE
+            | PIXMAP_FORMAT_NV16_BT709_NARROW
+            | PIXMAP_FORMAT_NV16_BT709_WIDE => {
+                dma.planes[0].stride = w;
+                dma.planes[0].size = dma.planes[0].stride * h;
+                dma.planes[0].offset = 0;
+                dma.planes[1].stride = w;
+                dma.planes[1].size = dma.planes[1].stride * h;
+                dma.planes[1].offset = dma.planes[0].size;
+                dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
+                dma.handles[1].fd = unsafe { dma.handles[0].fd };
+            }
+            PIXMAP_FORMAT_YUV422_8BIT_BT601_NARROW_AFBC
+            | PIXMAP_FORMAT_YUV422_8BIT_BT601_WIDE_AFBC
+            | PIXMAP_FORMAT_YUV422_8BIT_BT709_NARROW_AFBC
+            | PIXMAP_FORMAT_YUV422_8BIT_BT709_WIDE_AFBC
+            | PIXMAP_FORMAT_YUV422_8BIT_BT601_NARROW_AFBC_WIDEBLK
+            | PIXMAP_FORMAT_YUV422_8BIT_BT601_WIDE_AFBC_WIDEBLK
+            | PIXMAP_FORMAT_YUV422_8BIT_BT709_NARROW_AFBC_WIDEBLK
+            | PIXMAP_FORMAT_YUV422_8BIT_BT709_WIDE_AFBC_WIDEBLK => {
+                dma.planes[0].stride = w * 2;
+                dma.planes[0].size = dma.planes[0].stride * h;
+                dma.planes[0].offset = 0;
+                dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size);
+            }
             PIXMAP_FORMAT_P010 => {
                 dma.planes[0].stride = w * 2;
                 dma.planes[0].size = dma.planes[0].stride * h;
@@ -826,6 +852,32 @@ impl linux_pixmap {
                 dma.planes[1].offset = dma.planes[0].size;
                 dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
                 dma.handles[1].fd = unsafe { dma.handles[0].fd };
+            }
+            PIXMAP_FORMAT_NV16_BT601_NARROW
+            | PIXMAP_FORMAT_NV16_BT601_WIDE
+            | PIXMAP_FORMAT_NV16_BT709_NARROW
+            | PIXMAP_FORMAT_NV16_BT709_WIDE => {
+                dma.planes[0].stride = strides[0] as u64;
+                dma.planes[0].size = dma.planes[0].stride * h;
+                dma.planes[0].offset = 0;
+                dma.planes[1].stride = strides[1] as u64;
+                dma.planes[1].size = dma.planes[1].stride * h;
+                dma.planes[1].offset = dma.planes[0].size;
+                dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
+                dma.handles[1].fd = unsafe { dma.handles[0].fd };
+            }
+            PIXMAP_FORMAT_YUV422_8BIT_BT601_NARROW_AFBC
+            | PIXMAP_FORMAT_YUV422_8BIT_BT601_WIDE_AFBC
+            | PIXMAP_FORMAT_YUV422_8BIT_BT709_NARROW_AFBC
+            | PIXMAP_FORMAT_YUV422_8BIT_BT709_WIDE_AFBC
+            | PIXMAP_FORMAT_YUV422_8BIT_BT601_NARROW_AFBC_WIDEBLK
+            | PIXMAP_FORMAT_YUV422_8BIT_BT601_WIDE_AFBC_WIDEBLK
+            | PIXMAP_FORMAT_YUV422_8BIT_BT709_NARROW_AFBC_WIDEBLK
+            | PIXMAP_FORMAT_YUV422_8BIT_BT709_WIDE_AFBC_WIDEBLK => {
+                dma.planes[0].stride = strides[0] as u64;
+                dma.planes[0].size = dma.planes[0].stride * h;
+                dma.planes[0].offset = 0;
+                dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size);
             }
             PIXMAP_FORMAT_P010 => {
                 dma.planes[0].stride = strides[0] as u64;
