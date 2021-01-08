@@ -712,7 +712,7 @@ impl linux_pixmap {
                 dma.planes[0].size = dma.planes[0].stride * h;
                 dma.planes[0].offset = 0;
                 dma.planes[1].stride = w;
-                dma.planes[1].size = dma.planes[0].stride * h / 2;
+                dma.planes[1].size = dma.planes[1].stride * h / 2;
                 dma.planes[1].offset = dma.planes[0].size;
                 dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
                 dma.handles[1].fd = unsafe { dma.handles[0].fd };
@@ -848,7 +848,7 @@ impl linux_pixmap {
                 dma.planes[0].size = dma.planes[0].stride * h;
                 dma.planes[0].offset = 0;
                 dma.planes[1].stride = strides[1] as u64;
-                dma.planes[1].size = dma.planes[0].stride * h / 2;
+                dma.planes[1].size = dma.planes[1].stride * h / 2;
                 dma.planes[1].offset = dma.planes[0].size;
                 dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size + dma.planes[1].size);
                 dma.handles[1].fd = unsafe { dma.handles[0].fd };
