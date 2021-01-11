@@ -48,6 +48,13 @@ impl NativePixmap {
         }
     }
 
+    pub fn with_strides(_phy_addr: u64, _width: isize, _height: isize, _format: PixmapFormat, strides: &[usize]) -> Self {
+        Self {
+            id: 0,
+            valid: false,
+        }
+    }
+
     pub fn id(&self) -> NativePixmapType {
         self.id
     }
