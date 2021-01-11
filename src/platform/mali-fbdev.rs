@@ -594,9 +594,10 @@ impl DmaBufferExporter {
 
     fn wrap_fd(&self, phy_addr: u64, size: u64) -> std::os::raw::c_int {
         unsafe {
-            let mut wrap: hidbe_ioctl_wrap = Default::default();
-            wrap.dbe_phyaddr = phy_addr;
-            wrap.dbe_size = size;
+            let wrap = hidbe_ioctl_wrap {
+                dbe_phyaddr: phy_addr,
+                dbe_size: size,
+            };
             let dmabuf_fd = libc::ioctl(self.fd, DBE_COMMAND_WRAP.try_into().unwrap(), &wrap);
             assert!(
                 dmabuf_fd > 0,
@@ -633,11 +634,12 @@ impl linux_pixmap {
 
         let w: khronos_usize_t = width.try_into().unwrap();
         let h: khronos_usize_t = height.try_into().unwrap();
-        let mut dma: linux_pixmap = Default::default();
-        dma.width = width.try_into().unwrap();
-        dma.height = height.try_into().unwrap();
-        dma.pixmap_format = fbdev_pixmap_format::from(format).into();
-
+        let mut dma = linux_pixmap {
+            width: width.try_into().unwrap(),
+            height: height.try_into().unwrap(),
+            pixmap_format: fbdev_pixmap_format::from(format).into(),
+            ..Default::default()
+        };
         match fbdev_pixmap_format::from(format) {
             PIXMAP_FORMAT_BGR565
             | PIXMAP_FORMAT_RGB565
@@ -764,16 +766,17 @@ impl linux_pixmap {
     }
 
     #[cfg(feature = "plat-mali-fbdev")]
-    pub fn with_strides<'r>(phy_addr: u64, width: isize, height: isize, format: PixmapFormat, strides: &'r [usize]) -> Self {
+    pub fn with_strides(phy_addr: u64, width: isize, height: isize, format: PixmapFormat, strides: &[usize]) -> Self {
         use fbdev_pixmap_format::*;
 
         let _w: khronos_usize_t = width.try_into().unwrap();
         let h: khronos_usize_t = height.try_into().unwrap();
-        let mut dma: linux_pixmap = Default::default();
-        dma.width = width.try_into().unwrap();
-        dma.height = height.try_into().unwrap();
-        dma.pixmap_format = fbdev_pixmap_format::from(format).into();
-
+        let mut dma = linux_pixmap {
+            width: width.try_into().unwrap(),
+            height: height.try_into().unwrap(),
+            pixmap_format: fbdev_pixmap_format::from(format).into(),
+            ..Default::default()
+        };
         match fbdev_pixmap_format::from(format) {
             PIXMAP_FORMAT_BGR565
             | PIXMAP_FORMAT_RGB565
@@ -932,7 +935,7 @@ impl NativePixmap {
         }
     }
 
-    pub fn with_strides<'r>(phy_addr: u64, width: isize, height: isize, format: PixmapFormat, strides: &'r [usize]) -> Self {
+    pub fn with_strides(phy_addr: u64, width: isize, height: isize, format: PixmapFormat, strides: &[usize]) -> Self {
         unsafe {
             let dma = Box::new(linux_pixmap::with_strides(phy_addr, width, height, format, strides));
             let dma = Box::into_raw(dma);
