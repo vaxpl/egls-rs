@@ -4,6 +4,7 @@
 #![allow(improper_ctypes)]
 #![allow(dead_code)]
 #![allow(clippy::missing_safety_doc)]
+#![allow(clippy::unnecessary_cast)]
 #![allow(clippy::unreadable_literal)]
 
 #[cfg(feature = "plat-mali-fbdev")]

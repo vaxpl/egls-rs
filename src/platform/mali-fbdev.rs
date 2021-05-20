@@ -407,11 +407,11 @@ impl From<PixmapFormat> for fbdev_pixmap_format {
     }
 }
 
-impl Into<u64> for fbdev_pixmap_format {
-    fn into(self) -> u64 {
+impl From<fbdev_pixmap_format> for u64 {
+    fn from(val: fbdev_pixmap_format) -> Self {
         use fbdev_pixmap_format::*;
 
-        match self {
+        match val {
             PIXMAP_FORMAT_BGR565 => 2077032448,
             PIXMAP_FORMAT_RGB565 => 2077032449,
             PIXMAP_FORMAT_BGR565_AFBC => 2077032450,

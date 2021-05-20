@@ -16,18 +16,18 @@ impl Default for NativeHandle {
     }
 }
 
-impl Into<usize> for NativeHandle {
-    fn into(self) -> usize {
-        match self {
+impl From<NativeHandle> for usize {
+    fn from(val: NativeHandle) -> Self {
+        match val {
             NativeHandle::EglImage(v) => v as usize,
             NativeHandle::EglImageKHR(v) => v as usize,
         }
     }
 }
 
-impl Into<*const std::ffi::c_void> for NativeHandle {
-    fn into(self) -> *const std::ffi::c_void {
-        match self {
+impl From<NativeHandle> for *const std::ffi::c_void {
+    fn from(val: NativeHandle) -> *const std::ffi::c_void {
+        match val {
             NativeHandle::EglImage(v) => v as *const std::ffi::c_void,
             NativeHandle::EglImageKHR(v) => v as *const std::ffi::c_void,
         }
@@ -65,9 +65,9 @@ impl Default for Target {
     }
 }
 
-impl Into<egl::EGLenum> for Target {
-    fn into(self) -> egl::EGLenum {
-        match self {
+impl From<Target> for egl::EGLenum {
+    fn from(val: Target) -> egl::EGLenum {
+        match val {
             Target::GlTexture2D => egl::GL_TEXTURE_2D,
             Target::GlTextureCubeMapPositiveX => egl::GL_TEXTURE_CUBE_MAP_POSITIVE_X,
             Target::GlTextureCubeMapNegativeX => egl::GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
