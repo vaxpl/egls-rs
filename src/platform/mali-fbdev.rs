@@ -843,6 +843,12 @@ impl linux_pixmap {
                 dma.planes[0].offset = 0;
                 dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size);
             }
+            | PIXMAP_FORMAT_L8 => {
+                dma.planes[0].stride = strides[0] as u64;
+                dma.planes[0].size = dma.planes[0].stride * h;
+                dma.planes[0].offset = 0;
+                dma.handles[0].fd = DBE.wrap_fd(phy_addr, dma.planes[0].size);
+            }
             PIXMAP_FORMAT_NV21_BT601_NARROW
             | PIXMAP_FORMAT_NV21_BT601_WIDE
             | PIXMAP_FORMAT_NV21_BT709_NARROW
